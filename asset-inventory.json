@@ -1,0 +1,339 @@
+{
+  "assets": [
+    {
+      "path": "assets/ui/main-menu.png",
+      "bytes": 2574071,
+      "sha256": "5d29d9867a0121210bf534f9284d341ec1703eb740b215bbf499af55581c7e14"
+    },
+    {
+      "path": "assets/ui/stage-clear.png",
+      "bytes": 2259673,
+      "sha256": "e24dc209de5fb4e83c679ff16a96569bb00e6d772c99f5b4d5bd14205210d78f"
+    },
+    {
+      "path": "assets/ui/stage-defeat.png",
+      "bytes": 2213135,
+      "sha256": "47afcdde1573c1524f5fe4544a9b1c6d63b6a0b7baaa00408108d6aef615b02d"
+    },
+    {
+      "path": "assets/units/soldier.png",
+      "bytes": 1969492,
+      "sha256": "2b6c43fd2dfa4f790460612e4c36518699831a725aba86aed002f1101222a3b0"
+    },
+    {
+      "path": "assets/units/archer.png",
+      "bytes": 2594330,
+      "sha256": "2a43c78a132ae86ce0d7b93530af2e8fd6191a85901c121e1de2465df6ba2962"
+    },
+    {
+      "path": "assets/units/worker.png",
+      "bytes": 2660538,
+      "sha256": "7fad523a675275ac222cb1cd4619ff4d369aeb6036f8a61e0fa9c8a89cf4606c"
+    },
+    {
+      "path": "assets/units/warrior.png",
+      "bytes": 2782845,
+      "sha256": "f8fa6597ebbfc0bd73196d3256a1603e951c3837f03fb3680b89e13fdcc3c65f"
+    },
+    {
+      "path": "assets/backgrounds/castles.png",
+      "bytes": 2125778,
+      "sha256": "f9c477becd0f81241c8ea290662f748f8fc50413c90e888b0c44b3bdda1ad318"
+    },
+    {
+      "path": "assets/units/human.png",
+      "bytes": 2172631,
+      "sha256": "b2f04eaafda7659808003e30fc3e1529f69787ce8b12e3c06ba2833856fbf4b2"
+    },
+    {
+      "path": "assets/units/humanArcher.png",
+      "bytes": 2046071,
+      "sha256": "c788b3e2ad54ae55d8bf7ab7f7e1471a35fd9fd593cf4b24b3733048573bff92"
+    },
+    {
+      "path": "assets/units/shield.png",
+      "bytes": 2016287,
+      "sha256": "b2c30819483cd1f5edc478808e18265abdf750c4e46710f9c0504c4760ae028f"
+    },
+    {
+      "path": "assets/units/crossbow.png",
+      "bytes": 1952711,
+      "sha256": "69313da70feae4e2f4fa32af7dc504973d800d43c0076c487c34343f3a34b649"
+    },
+    {
+      "path": "assets/units/assault.png",
+      "bytes": 2010407,
+      "sha256": "5078e81e1772fe7d639e86427593283c36e189cc268ef602b6022bb5f853e8a0"
+    },
+    {
+      "path": "assets/units/heavy.png",
+      "bytes": 2226404,
+      "sha256": "1c37a8208a042b93ec94c2e8614a2b0f77db3962b629ee5c06bf54ec3ce48928"
+    },
+    {
+      "path": "assets/units/healer.png",
+      "bytes": 2530499,
+      "sha256": "21ea456dc146a696278927aa7bd52f517fc1d40825a053ebd75ceec4dcb24320"
+    },
+    {
+      "path": "assets/units/heavyShield.png",
+      "bytes": 2518631,
+      "sha256": "432a1802ddf6f1e2ba894d393de2c7f88c5485c1de03de2af6600520c51c2a6a"
+    },
+    {
+      "path": "assets/units/assassin-2.png",
+      "bytes": 2031288,
+      "sha256": "d7da60e5d896a83a20e1d3bfd547696fd4e447a963b83354b82d567543644fa6"
+    },
+    {
+      "path": "assets/backgrounds/forest.png",
+      "bytes": 937525,
+      "sha256": "562ac262960beec736f84d948be46eafabe754eba558c6c0a256d233dd6d72e4"
+    },
+    {
+      "path": "assets/backgrounds/mine.png",
+      "bytes": 1041326,
+      "sha256": "64bddb958d189ec1f54163e3e63c2aa59bc85a8d2682374eacefdbb7d781f11a"
+    },
+    {
+      "path": "assets/backgrounds/background.png",
+      "bytes": 2404087,
+      "sha256": "c1282a113410734777b6b756e872ca59744833e6a920232954406b8ce347175d"
+    },
+    {
+      "path": "assets/units/darkAssault.png",
+      "bytes": 2083526,
+      "sha256": "e25a8d20a44c835f2f15b1bca9718ea9d382ba6108f0524ba67c175bc8697464"
+    },
+    {
+      "path": "assets/units/seline.png",
+      "bytes": 2190616,
+      "sha256": "cfdaa65d9ddea71e5b7a5c744d312f70731334958f9ac309708c223bbf3c7509"
+    },
+    {
+      "path": "assets/units/magic.png",
+      "bytes": 1626334,
+      "sha256": "4dc2f5d7e3e79f54a1fd82336219c9f9c0b785ad512ba9a298712e2f68a7915a"
+    },
+    {
+      "path": "assets/units/barrier.png",
+      "bytes": 1937989,
+      "sha256": "d2e79fc0799cb58e8bbfd36d0a776a8d577921c76a35df3537a043f736d44d38"
+    },
+    {
+      "path": "assets/units/pirate.png",
+      "bytes": 1869674,
+      "sha256": "3d9c93ee1effa503078cf6eb2e86af50f99a41109db8e9fa358ab5501559a9db"
+    },
+    {
+      "path": "assets/units/knight-2.png",
+      "bytes": 2294145,
+      "sha256": "b5af1e00f0dd6bf3614419dadd8a9209dd255b459ae7ba5dc4f23a409a6f4454"
+    },
+    {
+      "path": "assets/units/isaac.png",
+      "bytes": 1963899,
+      "sha256": "5d20b72d4eaf02386d36a4a8e6e7b7db1fa10defc52bdf7ce8f56a169de6dbcd"
+    },
+    {
+      "path": "assets/units/hero.png",
+      "bytes": 1884802,
+      "sha256": "03a5c6ef97ea12a60f98532af79f81fddbf58e9c366b0e67b153d8128c625677"
+    },
+    {
+      "path": "assets/units/darkKnight.png",
+      "bytes": 2029940,
+      "sha256": "8914bc84a613a0c2693e1f1f5ef52f01aa7d4fab8a9cd85e0b359035e14e81f6"
+    },
+    {
+      "path": "assets/units/cat.png",
+      "bytes": 1959407,
+      "sha256": "313bacb01810a2066f63fb337f92c5cfd25d90e24238cd0defaf8b4e534e672f"
+    },
+    {
+      "path": "assets/units/boneDragon.png",
+      "bytes": 2256657,
+      "sha256": "c04011af63b4abd0bb802621c179ac52a70dd05786efcd6e26dbad51966b0b38"
+    },
+    {
+      "path": "assets/units/ailey.png",
+      "bytes": 2184942,
+      "sha256": "95ca658f1fdd6ea55d6a91bee23fe8f8080f37921f2d86110ff090004cdf05b8"
+    },
+    {
+      "path": "assets/units/rifle.png",
+      "bytes": 2078044,
+      "sha256": "0c5da7955285fc47b45fbd483814f7e454c245e7663c2273ddffd1a444801696"
+    },
+    {
+      "path": "assets/units/cannon.png",
+      "bytes": 2036520,
+      "sha256": "8352f183c7e2c54ffc9474cf39c608ec7f7c43628705a00a49eae574df7f924b"
+    },
+    {
+      "path": "assets/units/banner-2.png",
+      "bytes": 1752893,
+      "sha256": "5748e73b128efe4aedb3113345c5f0c2b26ff4d3c45d06ccc4f0449c70e4b3ba"
+    },
+    {
+      "path": "assets/units/dog.png",
+      "bytes": 1789861,
+      "sha256": "5c6b98228e16ec92e4718e927a9d6f176ec03620cae3519cb2e0e5dca70543d9"
+    },
+    {
+      "path": "assets/units/cerberus.png",
+      "bytes": 2042644,
+      "sha256": "71dd030787812aaf1d8d9016dfbab610c212de954dca36ba3d703980e82c513f"
+    },
+    {
+      "path": "assets/units/goblin.png",
+      "bytes": 2214379,
+      "sha256": "5b29a2c7a54c73dc42f7597f15c16b3c9d4e34d06288c099b797b8bf4c95fca6"
+    },
+    {
+      "path": "assets/units/javelin.png",
+      "bytes": 1926124,
+      "sha256": "940e6229e3ea38e498ddd8df2eef5c0bedb731c986add93b6187eec697a6067f"
+    },
+    {
+      "path": "assets/backgrounds/extraBackground.png",
+      "bytes": 3300286,
+      "sha256": "9bad3d30f6bbe8aebee8ed1a8c73306b0d51acdbc3c2c3bc1b62a0a65afb391f"
+    },
+    {
+      "path": "assets/units/greatWarrior.png",
+      "bytes": 2180558,
+      "sha256": "f1c8442e56c4d034818107ecc30e0b0db9e8b95a28e68ad72afb867a711b05fa"
+    },
+    {
+      "path": "assets/units/captain.png",
+      "bytes": 1957739,
+      "sha256": "d4d90a868aa58fd543145903fbd218663f176f0e5f991b743a934048dece2482"
+    },
+    {
+      "path": "assets/units/shieldKnight.png",
+      "bytes": 2375242,
+      "sha256": "d66994fe41feee69acc5bea52d71fb2d005ad824ab8ef32c98751e4904842468"
+    },
+    {
+      "path": "assets/units/axeKnight.png",
+      "bytes": 2112299,
+      "sha256": "786174a10a76a9fc2a3ac5a7301f77ebd1235f2a896a3eb93432698987f5aaf5"
+    },
+    {
+      "path": "assets/units/toyHammer.png",
+      "bytes": 2177332,
+      "sha256": "471de74c50b76dba1bd54c0ad87348d5cb804ba73e73e7be1acbc479bf506422"
+    },
+    {
+      "path": "assets/units/phil.png",
+      "bytes": 2013532,
+      "sha256": "8c80690cdfdb784903e9e0186abdfa970afb2326d0caa86ff6435056065d57af"
+    },
+    {
+      "path": "assets/units/phil2.png",
+      "bytes": 2087384,
+      "sha256": "78f14961fdd0744b7e1768854a6cc865ae84f5b1ffeca73fc762e597c5c29612"
+    },
+    {
+      "path": "assets/units/observer.png",
+      "bytes": 1901513,
+      "sha256": "c34b5d9d56d75fdde2f2e24cb6e0d69f0afbd5645dc16b2f49d80ba9c9b1ddb0"
+    },
+    {
+      "path": "assets/units/humanAssassin.png",
+      "bytes": 2458843,
+      "sha256": "d8db6ee686ebb346a421dab151430aaff7c7a43b2c49e47f42c6f80d647577b4"
+    },
+    {
+      "path": "assets/units/balloon.png",
+      "bytes": 2849763,
+      "sha256": "b1a35df0c739cf519d74ea93b443c83511ae49d4c73148f64d60512cc06ebda6"
+    },
+    {
+      "path": "assets/units/scout.png",
+      "bytes": 2196265,
+      "sha256": "cde6e200e0a2642b678cc1e55b439a4b544f1aa07335939c8155e7de7f4793bc"
+    },
+    {
+      "path": "assets/units/invisibleSkeleton.png",
+      "bytes": 2409827,
+      "sha256": "d99a21d6facaaa583d90de71ed15eab02dc537e36db5885e03742d265a23f6e3"
+    },
+    {
+      "path": "assets/units/shane.png",
+      "bytes": 2431346,
+      "sha256": "fccc7b0896933fa541caca6ffdf5c8a2459d2b0c3fc4434e48d47254c4bede93"
+    },
+    {
+      "path": "assets/units/kon.png",
+      "bytes": 2563333,
+      "sha256": "81fad1dd442d7036f06fd1b0d6d03a537910530b1b890d7add2e0c3c400634f9"
+    },
+    {
+      "path": "assets/units/parhan.png",
+      "bytes": 2725475,
+      "sha256": "8e8e886159fcfeecce92d6b62bf7969d60cd0a4a5409b637f8865a92f4fe03ec"
+    },
+    {
+      "path": "assets/units/rifren.png",
+      "bytes": 2436717,
+      "sha256": "387eb3cd39cadd6d637455acbc8c66690a9302cdfb20b260b9488ac818ee1800"
+    },
+    {
+      "path": "assets/backgrounds/mercenaryBackground.png",
+      "bytes": 2932081,
+      "sha256": "0edfe40590997417e5355ea7511ad0f730bdf37ad5122896902915517f4b8dae"
+    },
+    {
+      "path": "assets/units/laserKai.png",
+      "bytes": 2042673,
+      "sha256": "2f11055aad391464179e9a1811f4e3e15cccb5d1afc242f7e948402d84e0d4a5"
+    },
+    {
+      "path": "assets/backgrounds/winterWide.png",
+      "bytes": 2226212,
+      "sha256": "b4193c76b6ffa44b9efb8c677dea7ca409e0f2a09e802667b850f289f2c9b48a"
+    },
+    {
+      "path": "assets/backgrounds/robinHut.png",
+      "bytes": 2348887,
+      "sha256": "4e67a42d3a275b61cd190f5d1c1d028224eedda8ac1c6ad8376d01bb75eab926"
+    },
+    {
+      "path": "assets/units/robin.png",
+      "bytes": 1856169,
+      "sha256": "5ac0f8dc989e8f071873818d84375206216a2438312a03a436bc7ea3b864f7d0"
+    },
+    {
+      "path": "assets/ui/merchant.png",
+      "bytes": 1227314,
+      "sha256": "ed4c0cbaadb250b83ea2f85f117889c341dd608499d9ba82cdfe311f2c327e09"
+    },
+    {
+      "path": "assets/ui/shop.png",
+      "bytes": 2502638,
+      "sha256": "5599c3357c935c17bff5aebb3bbe05ed868b3b62a75737706d7003d5680e2b97"
+    },
+    {
+      "path": "assets/ui/potions.png",
+      "bytes": 1308975,
+      "sha256": "7b5bb14c74d0bdea196bfd3ad2f91227c1a7ed36da3a9c7bb4f63aa349cb5cf6"
+    },
+    {
+      "path": "assets/ui/gacha.png",
+      "bytes": 1867374,
+      "sha256": "5374ddc60f23946efbbf8467d7cd5a9e5db6e456cbd21a126bcae9b5df8077f1"
+    },
+    {
+      "path": "assets/ui/loot.png",
+      "bytes": 2299349,
+      "sha256": "89c98e57fd9546e0357ebf9c3bdbebeddcbdb9ec865979cd484ab362e1daaca3"
+    },
+    {
+      "path": "assets/audio/menu-music.mp3",
+      "bytes": 3473723,
+      "sha256": "3daafd5b07b70de56f06d8702d5a0cb4e003742fcbdd1e9ddc76a11409ad80af"
+    }
+  ]
+}
