@@ -69,5 +69,13 @@ window.GAME_ASSETS = {
   },
   "audio": {
     "menu": "assets/audio/menu-music.mp3"
+  },
+  "stories": {
+    "10": "assets/stories/chapter-1-clear.png",
+    "20": "assets/stories/chapter-2-clear.png",
+    "30": "assets/stories/chapter-3-clear.png",
+    "40": "assets/stories/chapter-4-clear.png",
+    "50": "assets/stories/chapter-5-clear.png",
+    "start": "assets/stories/start.png"
   }
 };

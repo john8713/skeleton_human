@@ -334,6 +334,36 @@
       "path": "assets/audio/menu-music.mp3",
       "bytes": 3473723,
       "sha256": "3daafd5b07b70de56f06d8702d5a0cb4e003742fcbdd1e9ddc76a11409ad80af"
+    },
+    {
+      "path": "assets/stories/chapter-5-clear.png",
+      "bytes": 3512037,
+      "sha256": "ad636474f8e76a2e3cca952e0552a6bbae140fb2e8e8c30872c021c90cbcd532"
+    },
+    {
+      "path": "assets/stories/chapter-3-clear.png",
+      "bytes": 3259371,
+      "sha256": "d4df024db479811bcaeb44e3fe2f41b8b4a1ea262484ff53759c579126731aee"
+    },
+    {
+      "path": "assets/stories/chapter-4-clear.png",
+      "bytes": 3375168,
+      "sha256": "6e995e69a58946aed244387755d14a499f2b594954f1f24b9ab7bd5a327395ec"
+    },
+    {
+      "path": "assets/stories/chapter-2-clear.png",
+      "bytes": 2993132,
+      "sha256": "2e95aab6953354bff1533928ed5007d240f6a35974ed46f9d5b0b9abbe7b0244"
+    },
+    {
+      "path": "assets/stories/chapter-1-clear.png",
+      "bytes": 2909600,
+      "sha256": "8f9bea62419bdc8124f258fadb183d64fb34df989533bc142791dc8b8502c1a0"
+    },
+    {
+      "path": "assets/stories/start.png",
+      "bytes": 2993039,
+      "sha256": "38184aab833f37d557677a7f08f8149ccb504268b3abe71d49ba2c58dfc75ad6"
     }
   ]
 }

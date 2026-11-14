@@ -220,3 +220,5 @@ html,body,#undead-game-v3,#undead-game-v3 button,#undead-game-v3 canvas,#undead-
 #loadingScreen{position:fixed;inset:0;z-index:99999;background:#11151e;color:#eee;display:flex;flex-direction:column;justify-content:center;align-items:center;font:bold 24px system-ui}#loadingScreen small{margin-top:16px;font:14px system-ui;color:#aab2c3}#loadingScreen.hidden{display:none}#capeMotion,#mainFire{display:none!important}#mainScreen *{animation:none!important}
 #undead-game-v3 #battleDock .shop.rare-ex{background:#536c32!important;border-color:#a7c875;color:#f4f8e8;opacity:1!important}#undead-game-v3 #battleDock .unitSlot:has(.rare-ex) .moveUnit,#undead-game-v3 #battleDock .unitSlot:has(.rare-ex) .uniformCount{background:#536c32!important;border-color:#a7c875;color:#f4f8e8}
 #undead-game-v3 #battleDock .unitShop{grid-template-columns:repeat(6,minmax(72px,1fr));overflow-x:auto}
+
+#chapterStory{position:fixed;inset:0;z-index:10000;background:#08090c;display:flex;align-items:center;justify-content:center;pointer-events:auto}#chapterStory.hidden{display:none}#chapterStory img{width:100%;height:100%;object-fit:contain}#battleDock .unitSlot{min-width:0}
