@@ -222,3 +222,5 @@ html,body,#undead-game-v3,#undead-game-v3 button,#undead-game-v3 canvas,#undead-
 #undead-game-v3 #battleDock .unitShop{grid-template-columns:repeat(6,minmax(72px,1fr));overflow-x:auto}
 
 #chapterStory{position:fixed;inset:0;z-index:10000;background:#08090c;display:flex;align-items:center;justify-content:center;pointer-events:auto}#chapterStory.hidden{display:none}#chapterStory img{width:100%;height:100%;object-fit:contain}#battleDock .unitSlot{min-width:0}
+
+#sphinxQuiz{position:fixed;inset:0;z-index:9000;display:flex;align-items:center;justify-content:center;background:#0007;padding:12px}#sphinxQuiz.hidden{display:none}.sphinxCard{background:#241d16f5;color:#ffedc5;border:2px solid #b99350;border-radius:16px;padding:18px;max-width:800px;width:90%;max-height:90dvh;overflow:auto;text-align:center}#sphinxQuestion{font-size:clamp(14px,2.2vw,23px)}#sphinxDoors{max-width:100%;max-height:35dvh;object-fit:contain;margin:auto}.sphinxAnswers{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.sphinxAnswers button{padding:12px 4px;color:#fff0c7;background:#665036;border:1px solid #c9a45e;border-radius:8px}#sphinxTimer{color:#ffcb70}

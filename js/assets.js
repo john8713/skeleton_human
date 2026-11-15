@@ -58,7 +58,14 @@ window.GAME_ASSETS = {
     "laserKai": "assets/units/laserKai.png",
     "winterWide": "assets/backgrounds/winterWide.png",
     "robinHut": "assets/backgrounds/robinHut.png",
-    "robin": "assets/units/robin.png"
+    "robin": "assets/units/robin.png",
+    "sphinx": "assets/units/sphinx.png",
+    "anubis": "assets/units/anubis.png",
+    "pharaoh": "assets/units/pharaoh.png",
+    "pyramid": "assets/backgrounds/pyramid.png",
+    "desertWide": "assets/backgrounds/desertWide.png",
+    "sphinxDoors": "assets/ui/sphinxDoors.png",
+    "egyptian": "assets/units/egyptian.png"
   },
   "shop": {
     "merchant": "assets/ui/merchant.png",

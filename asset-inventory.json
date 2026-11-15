@@ -364,6 +364,41 @@
       "path": "assets/stories/start.png",
       "bytes": 2993039,
       "sha256": "38184aab833f37d557677a7f08f8149ccb504268b3abe71d49ba2c58dfc75ad6"
+    },
+    {
+      "path": "assets/units/pharaoh.png",
+      "bytes": 2542399,
+      "sha256": "b36745f5c0020692caec044565886b7579097345c1418610e4efe386962a7484"
+    },
+    {
+      "path": "assets/backgrounds/pyramid.png",
+      "bytes": 2299216,
+      "sha256": "7f4de86591ca9f0a76f25f5b0c6dfe6de594c638db0d29ef092b82b5f0552e75"
+    },
+    {
+      "path": "assets/units/anubis.png",
+      "bytes": 2497562,
+      "sha256": "f2c9e77165aa0027f51f2487509aeda34224cce0ebd36f09212b099b71f954e6"
+    },
+    {
+      "path": "assets/backgrounds/desertWide.png",
+      "bytes": 2413865,
+      "sha256": "0b098d17b25519304525abe2156887a884530676c7777c87b3a29f869059dc73"
+    },
+    {
+      "path": "assets/ui/sphinxDoors.png",
+      "bytes": 3007199,
+      "sha256": "6974d5c052ec4b786e3cd2feb314ad93db0620623c3c4cfefb2dda54d7848244"
+    },
+    {
+      "path": "assets/units/sphinx.png",
+      "bytes": 2519885,
+      "sha256": "76bce46bfc7584e7c327b5dfcf1420e33a13909ff8fa164e27d7127a77c9303b"
+    },
+    {
+      "path": "assets/units/egyptian.png",
+      "bytes": 1457480,
+      "sha256": "1a3f27c0e8cdad4e3125d13e6ddffef52783af69029b2cd1470858b45eb0e101"
     }
   ]
 }

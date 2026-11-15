@@ -44,6 +44,12 @@ Object.assign(NEW_UNITS,{"greatWarrior": {"name": "스켈레톤대전사", "tier
   Object.assign(RARE,{laserKai:{name:'레이저_改',tier:'ex',hp:550,d:100,a:.5,r:200,v:7,def:1,cost:[410,330],description:'8초 차징 후 강력한 레이저를 8초 동안 발사합니다. 차징 중 피격 시 취소됩니다.'},fallenRobin:{name:'타락한 로빈 훗',tier:'ex',source:'robin',hp:1750,d:100,a:1,r:200,v:50,def:3,cost:[1200,150],description:'숲의 파수꾼. 점프 사격과 후퇴, 성에서의 회복을 사용합니다.'}});
   for(const [key,b] of Object.entries(MERCENARIES))Object.assign(RARE['fallen_'+key],{hp:b.hp/2,d:b.d,a:b.a,r:b.r});
   Object.assign(RARE.goblin,{hp:200,def:5});Object.assign(NEW_UNITS.observer,{hp:170,v:60});
+  Object.assign(RARE,{
+    fallenSphinx:{name:'타락한 스핑크스',source:'sphinx',tier:'legendary',hp:11250,d:200,a:1.2,r:50,v:20,def:30,cost:[1500,1000],description:'스핑크스의 광역 공격을 사용합니다.'},
+    fallenAnubis:{name:'타락한 아누비스',source:'anubis',tier:'legendary',hp:5750,d:800,a:2,r:200,v:30,def:10,cost:[1200,900],description:'영혼탄으로 범위 100에 피해를 줍니다.'},
+    fallenPharaoh:{name:'타락한 파라오',source:'pharaoh',tier:'ex',hp:10000,d:20,a:1.5,r:200,v:15,def:0,cost:[1800,1400],description:'라의 눈과 저주를 사용하며 사망 시 60% 확률로 부활합니다.'}
+  });
+  NEW_UNITS.fallen_egyptian={name:'타락한 이집트병사',source:'egyptian',tier:'rare',hp:200,d:20,a:1,r:28,v:30,def:0,cost:[160,80]};
   const GROUND=295,FRAMES={};
   const FRAME_W=168,FRAME_H=128,FRAME_X=84,FRAME_FEET=120,UNIT_SCALE=.3;
   // Remove the smooth sheet background once, before finding boundaries between poses.
@@ -83,8 +89,19 @@ Object.assign(NEW_UNITS,{"greatWarrior": {"name": "스켈레톤대전사", "tier
     return corrected.slice(0,-1).map((x,i)=>cut(im,x,y,corrected[i+1]-x,h,feet));
   }
   const ready=Promise.all(Object.entries(SHEETS).map(([key,src])=>new Promise((resolve,reject)=>{const source=new Image();source.onload=()=>{try{
-    if(key==='background'||key==='extraBackground'||key==='mercenaryBackground'||key==='winterWide'){FRAMES[key]=source;resolve();return;}
+    if(key==='background'||key==='extraBackground'||key==='mercenaryBackground'||key==='winterWide'||key==='desertWide'||key==='sphinxDoors'){FRAMES[key]=source;resolve();return;}
 
+    if(key==='egyptian'){const im=source,k=source.width/2048;im.hires=true;im.strictUnit=true;const seq=(xs,y,h)=>xs.slice(0,-1).map((x,i)=>cut(im,Math.round(x*k),Math.round(y*k),Math.round((xs[i+1]-x)*k),Math.round(h*k),Math.round((h-4)*k)));FRAMES[key]={idle:seq([425,600,775,950,1125,1300,1475],0,134),walk:seq([420,595,770,945,1120,1295,1470,1645,1840],145,120),attack:seq([420,595,770,945,1120,1295,1470,1645,1840],275,145),death:seq([420,595,770,945,1120,1295,1475],565,110)};resolve();return;}
+    if(key==='pyramid'){FRAMES[key]=prepareSheet(source,true,false,'shane');resolve();return;}
+    if(['sphinx','anubis','pharaoh'].includes(key)){
+      const im=key==='pharaoh'?source:prepareSheet(source,true,false,'shane');im.hires=true;
+      const frame=(x,y,w,h,feet=h-5)=>cut(im,x,y,w,h,feet);
+      const seq=(xs,y,h)=>xs.slice(0,-1).map((x,i)=>frame(x,y,xs[i+1]-x,h));
+      if(key==='sphinx')FRAMES[key]={idle:seq([25,240,450,660,875,1090,1300,1536],0,185),walk:seq([0,195,390,585,780,975,1170,1365,1536],205,160),attack:seq([0,195,390,585,780,975,1170,1365,1536],385,160),death:seq([0,205,415,625,835,1045,1255,1536],700,120)};
+      if(key==='anubis'){FRAMES[key]={idle:seq([395,555,715,875,1035,1195,1355,1536],0,175),walk:seq([390,550,710,870,1030,1190,1350,1536],185,150),attack:seq([390,550,710,870,1065],340,160),death:seq([390,570,750,930,1130,1330,1536],655,145)};FRAMES.soul=frame(385,840,130,90);}
+      if(key==='pharaoh'){FRAMES[key]={idle:seq([400,550,700,850,1000,1150,1300,1500],0,145),walk:seq([400,550,700,850,1000,1150,1300,1450,1580],150,145),attack:seq([405,550,700,910,1120,1330,1530,1740],300,145),attack2:seq([405,565,735,910,1090,1270,1460,1760],450,150),death:seq([405,550,690,830,970,1100,1240,1380,1550,1710],615,125)};FRAMES.raEye=cut(source,120,775,80,60,0,true);FRAMES.curse=cut(source,925,775,110,85,0,true);}
+      resolve();return;
+    }
     if(key==='laserKai'||key==='robin'){
       const im=source, k=source.width/2048, frame=(x,y,w,h,feet=h-5)=>cut(im,Math.round(x*k),Math.round(y*k),Math.round(w*k),Math.round(h*k),Math.round(feet*k));im.hires=true;im.keepDetails=true;
       const seq=(xs,y,h,feet)=>xs.slice(0,-1).map((x,i)=>frame(x,y,xs[i+1]-x,h,feet));
@@ -170,7 +187,7 @@ Object.assign(NEW_UNITS,{"greatWarrior": {"name": "스켈레톤대전사", "tier
       const poses=row(im,nine,250,225,200);FRAMES[key]={walk:poses.slice(0,6),attack:poses.slice(6),death:row(im,death,725,280,215)};
     }
     resolve();}catch(e){reject(e);}};source.onerror=reject;source.src=src;})));
-  function drawSprite(type,u,flip=false){const originalType=type;const source=RARE[type]?.source||NEW_UNITS[type]?.source;if(source){type=source==='phil'?(u.phase===2?'phil2':'phil'):enemySprite(source);flip=source!=='scout';}if(type==='robin'&&u.retreatTo!==undefined)flip=!flip;if(originalType==='shieldKnight'&&u.axeForm)type='axeKnight';if(originalType==='phil'&&u.phase===2)type='phil2';if(originalType==='cursedHand'&&u.handSide==='left')type='cursedHandLeft';
+  function drawSprite(type,u,flip=false){if(u.coffinUntil){const frames=FRAMES.pharaoh?.death;if(frames)ctx.drawImage(frames[frames.length-1],u.x-84,GROUND-128,168,128);return;}const originalType=type;const source=RARE[type]?.source||NEW_UNITS[type]?.source;if(source){type=source==='phil'?(u.phase===2?'phil2':'phil'):enemySprite(source);flip=source!=='scout';}if(type==='robin'&&u.retreatTo!==undefined)flip=!flip;if(originalType==='shieldKnight'&&u.axeForm)type='axeKnight';if(originalType==='phil'&&u.phase===2)type='phil2';if(originalType==='cursedHand'&&u.handSide==='left')type='cursedHandLeft';
     const f=FRAMES[type];if(!f)return;let frames,idx;
     const now=S?.time||0, previous=u._motion;
     const moved=previous?Math.abs(u.x-previous.x)>.005:!u.stationary;
@@ -181,7 +198,7 @@ Object.assign(NEW_UNITS,{"greatWarrior": {"name": "스켈레톤대전사", "tier
     else if(u.attack>0||u.phase==='work'){state=(u.attack2&&f.attack2)?'attack2':type==='seline'&&u.castKind==='earth'?'cast':'attack';oneShot=u.phase!=='work';duration=type==='pirate'?.7:type==='healer'?.8:Math.max(.2,u.a||.8);}
     else if(moved){state=u.carry&&f.carry?'carry':'walk';duration=Math.max(.42,Math.min(1.05,34/Math.max(15,u.v||25)));}
     if(u.type==='laserKai'&&u.death===undefined){if(u.beamRemaining>0){state='attack';oneShot=false;}else if(u.charge>0){state='charge';oneShot=false;}}if((u.type==='robin'||u.type==='fallenRobin')&&u.death===undefined){if(u.jumpAge!==undefined)state='jump';else if(u.retreatTo!==undefined)state='retreat';}
-    const frozen=bossIntroActive()||(u.type==='isaac'&&now<(u.wakeAt||0));if(frozen){state='idle';oneShot=false;}
+    const frozen=(S.desert&&['quiz','speech','pan','death'].includes(S.desert.phase))||S.time<(u.desertWake||0)||bossIntroActive()||(u.type==='isaac'&&now<(u.wakeAt||0));if(frozen){state='idle';oneShot=false;}
     frames=f[state]||f.idle||f.walk;if(!frames?.length)return;
     const reset=!previous||previous.state!==state||(oneShot&&(u.attack||0)>(previous.attack||0)+.025)||now<previous.at;
     const start=reset?now:previous.start,elapsed=u.death!==undefined?u.death:Math.max(0,now-start);
@@ -201,7 +218,7 @@ Object.assign(NEW_UNITS,{"greatWarrior": {"name": "스켈레톤대전사", "tier
     if(type!=='observer'&&type!=='balloon')ctx.translate(0,-Math.abs(stride)*.3-breath);
     ctx.drawImage(frames[Math.max(0,idx)],type==='knight'?-240:-FRAME_X,type==='knight'?-280:-FRAME_FEET,type==='knight'?480:FRAME_W,type==='knight'?300:FRAME_H);ctx.restore();
   }
-  const SPRITE_SIZE={};
+  const SPRITE_SIZE={sphinx:2.3,anubis:2.3,pharaoh:2.5};
   function frameHeight(f){const g=f.getContext('2d'),d=g.getImageData(0,0,f.width,f.height).data;let top=f.height,bottom=0;for(let y=0;y<f.height;y++)for(let x=0;x<f.width;x++)if(d[(y*f.width+x)*4+3]>200){top=Math.min(top,y);bottom=Math.max(bottom,y);}return Math.max(1,bottom-top)*128/f.height;}
   ready.then(async()=>{if(typeof mainArt.decode==='function')await mainArt.decode();q('#loadingScreen').classList.add('hidden');q('#mainScreen').style.visibility='visible';for(const [key,base,scale] of [['shieldKnight','heavyShield',1.15],['axeKnight','heavyShield',1.15],['captain','pirate',1.45]]){const f=FRAMES[key],b=FRAMES[base];SPRITE_SIZE[key]=frameHeight((b.idle||b.walk)[0])*scale/frameHeight((f.idle||f.walk)[0]);}for(const [key,d] of Object.entries({...RARE,...NEW_UNITS}))if(d.source)FRAMES[key]=FRAMES[enemySprite(d.source)];for(const [id,type] of [['woodWorkerIcon','wood'],['coalWorkerIcon','coal'],['soldierIcon','soldier'],['archerIcon','archer'],['shieldIcon','shield'],['assaultIcon','assault']])q('#'+id).src=FRAMES[type].walk[0].toDataURL();q('#gameStart').disabled=false;q('#continueBtn').disabled=!S;q('#gameStart').textContent='▶ 게임 시작';}).catch(e=>{console.error(e);q('#loadingScreen').textContent='이미지를 불러오지 못했습니다. 새로고침해 주세요.';q('#gameStart').textContent='이미지 로딩 실패 · 새로고침해 주세요';});
   q('#gameStart').disabled=true;q('#gameStart').textContent='이미지 준비 중…';
@@ -245,7 +262,7 @@ const GOLD_ART=window.GAME_ASSETS.shop;
   let shopOpen=false,shopSelection=null,lastThanks=-1,lootPage=0;
   function ensureGold(){ensureRare();profile.gold??=0;profile.potions??={red:0,blue:0,gold:0};profile.loot??={};profile.gachaTickets??={epic:0,legendary:0};}
   function itemDropKind(r){return r<.15?'red':r<.30?'blue':r<.40?'gold':r<.42?'coins':'loot';}
-  function awardDrop(enemy){if(enemy.type==='robinHut')return;
+  function awardDrop(enemy){if(['robinHut','pyramid'].includes(enemy.type))return;
     ensureGold();if(enemy.lootRolled||enemy.h>0)return;enemy.lootRolled=true;S.souls=(S.souls||0)+1;S.totalDefeated=(S.totalDefeated||0)+1;
     const goldRoll=Math.random(),itemRoll=Math.random();let found=[];
     if(enemy.lootOwner?.type==='goblin'&&Math.random()<.1){let key;if(Math.random()<.5){profile.gold++;key='coin';found.push('도둑고블린: 1 골드');}else{const table=DROP_TABLE[enemy.type]||DROP_TABLE.grunt;key=table[Math.floor(Math.random()*table.length)];profile.loot[key]=(profile.loot[key]||0)+1;found.push('도둑고블린: '+LOOT[key].name);}S.effects.push({kind:'loot',item:key,owner:enemy.lootOwner,x:enemy.x,life:.5});}
@@ -275,7 +292,7 @@ const GOLD_ART=window.GAME_ASSETS.shop;
 
 
   let stageNo=1, S=null, last=performance.now();
-  function chapterName(n){const names=['새벽 평원','황혼의 전장','달빛 황야','가을 평원','겨울 설원','사막 유적','화산 지대','습지 늪지대','심해 동굴','요새 성벽 앞','숲속 지대'];const chapter=Math.floor((n-1)/10)+1;return '제'+chapter+'장 · '+names[Math.min(names.length-1,chapter-1)];}
+  function chapterName(n){const names=['새벽 평원','황혼의 전장','달빛 황야','가을 평원','겨울 설원','사막 유적','사막 유적','사막 유적','심해 동굴','요새 성벽 앞','숲속 지대'];const chapter=Math.floor((n-1)/10)+1;return '제'+chapter+'장 · '+names[Math.min(names.length-1,chapter-1)];}
   const names={1:'죽은 자의 행진',2:'검은 숲',3:'잿빛 탄광',4:'휴먼 초소',5:'왕국 외곽'};
   const BOSS_STATS={hp:1400,d:90,r:45,v:12,a:1.8,def:5};
   function stageLabel(n){return (Math.floor((n-1)/10)+1)+'-'+((n-1)%10+1);}
@@ -293,12 +310,13 @@ const GOLD_ART=window.GAME_ASSETS.shop;
   function startStage(n){unlockAdvanced();for(const key of Object.keys(NEW_UNITS)){profile.level[key]??=1;profile.xp[key]??=0;}
     ensureGold();shopOpen=false;q('#goldShop').classList.add('hidden');
     q('#unlockModal').classList.add('hidden');normalizeLoadout();onMain=false;syncMusic();q('#settingsPanel').classList.add('hidden');stageNo=n; const d=stageData(n);
-    S={philSpawned:false,isReplay:(profile.clearedStages||[]).includes(n),cameraX:n===40||n===50?800:0,mercenaryBattle:n===40,bossStage:n===10||n===20||n===40||n===50,bossWakeAt:n===20?20:15,wood:260,coal:n>=3?50:0,souls:0,totalDefeated:0,cap:16+profile.populationBuys*2,ph:d.player+profile.castleBonus,pm:d.player+profile.castleBonus,eh:d.hp,em:d.hp,time:0,pause:false,over:false,spawn:n===20?d.spawn*2:2,
+    S={philSpawned:false,isReplay:(profile.clearedStages||[]).includes(n),cameraX:[40,50,60,70,80].includes(n)?800:0,mercenaryBattle:n===40,bossStage:n===10||n===20||n===40||n===50,bossWakeAt:n===20?20:15,wood:260,coal:n>=3?50:0,souls:0,totalDefeated:0,cap:16+profile.populationBuys*2,ph:d.player+profile.castleBonus,pm:d.player+profile.castleBonus,eh:d.hp,em:d.hp,time:0,pause:false,over:false,spawn:n===20?d.spawn*2:2,
       workers:[mkWorker('wood',0)],units:[],enemies:[],effects:[],activity:emptyActivity(),corpses:[],build:{wood:0,coal:0,soldier:0,archer:0,warrior:0,crossbow:0,shield:0,assault:0,heavyShield:0,assassin:0,banner:0,darkAssault:0,pirate:0},used:{soldier:0,archer:0,warrior:0,crossbow:0,shield:0,assault:0,heavyShield:0,assassin:0,banner:0,darkAssault:0,pirate:0},kills:{soldier:0,archer:0,warrior:0,crossbow:0,shield:0,assault:0,heavyShield:0,assassin:0,banner:0,darkAssault:0,pirate:0},d};
     for(const key of [...Object.keys(RARE),...Object.keys(NEW_UNITS)]){S.build[key]=0;S.used[key]=0;S.kills[key]=0;}
     if(S.bossStage){const b=n===20?{hp:1500,d:55,r:180,v:8,a:1.5,def:0}:BOSS_STATS;S.enemies=[{type:n===20?'seline':'knight',x:650,y:GROUND,h:b.hp,m:b.hp,d:b.d,r:b.r,v:b.v,a:b.a,def:b.def,cd:.1,anim:0,attack:0}];S.eh=b.hp;S.em=b.hp;}
     if(n===40){S.enemies=['parhan','shane','rifren','kon'].map((type,i)=>{const b=MERCENARIES[type];return {type,x:[1210,1300,1390,1470][i],y:GROUND,h:b.hp,m:b.hp,d:b.d,r:b.r,v:b.v,a:b.a,def:b.def,cd:.1,anim:0,attack:0,stationary:true};});S.eh=S.em=9000;S.spawn=999999;}
     if(n===50){S.enemies=[{type:'robinHut',x:1500,y:GROUND,h:8000,m:8000,d:0,v:0,a:99,r:0,def:0},{type:'robin',x:1380,y:GROUND,h:3500,m:3500,d:200,a:1,r:200,v:50,def:3,cd:0,anim:0,attack:0}];S.eh=S.em=3500;S.spawn=999999;beginBossIntro('robin','숲의 파수꾼 로빈 훗','정의의 이름으로!');S.bossIntro.until=S.bossIntro.speechUntil;}
+    initDesert(n);
     if(n===10||n===20){S.bossWakeAt=6;beginBossIntro(n===10?'knight':'seline',n===10?'원정대장 프라함':'수호마법사 셀리네',n===10?'하찮은 스켈레톤들이 판을 치는구나..':'이 곳만은 제가 지켜내겠어요!');}
     UI.main.classList.add('hidden'); UI.game.classList.remove('hidden'); UI.overlay.classList.add('hidden');
     UI.stage.textContent=stageLabel(n); UI.sub.textContent=d.name;
@@ -344,18 +362,19 @@ Object.assign(COSTS,Object.fromEntries(Object.entries(RARE).map(([k,v])=>[k,v.co
     }
   }
 
-  function enemyStats(type,n=stageNo){if(type==='humanAssassin')return {hp:150,d:40,a:.9,v:58,r:35,def:0};if(type==='balloon')return {hp:390,d:25,a:1.05,v:23,r:160,def:15};if(type==='scout')return {hp:80,d:0,a:1,v:40,r:0,def:1};
+  function enemyStats(type,n=stageNo){if(type==='egyptian')return {hp:200,d:20,a:1,v:30,r:28,def:0};if(type==='humanAssassin')return {hp:150,d:40,a:.9,v:58,r:35,def:0};if(type==='balloon')return {hp:390,d:25,a:1.05,v:23,r:160,def:15};if(type==='scout')return {hp:80,d:0,a:1,v:40,r:0,def:1};
     if(type==='apprentice')return {hp:450,d:45,r:30,v:25,a:1.5,def:3};if(type==='rifle')return {hp:70,d:28,v:22,r:200,def:0,a:1.1};if(type==='cannon')return {hp:140,d:35,v:18,r:140,def:0,a:2};
     const m=1; // Enemy unit stats remain fixed at every stage.
     const base={cavalry:{hp:82*2,d:12*3,r:35,v:24*1.5,a:.85},grunt:{hp:82,d:12,r:28,v:24,a:.85},archer:{hp:65,d:14,r:125,v:19,a:1.1},heavy:{hp:82*1.2,d:12*2.5,r:32,v:24*.5,a:.85/.5/1.2},healer:{hp:82*.75,d:0,r:120,v:24*.8,a:.85*5}}[type];
     return {...base,hp:base.hp*m*.85*1.25,d:base.d*m*1.25};
   }
-  function enemySprite(type){return {robin:'robin',laserKai:'laserKai',shane:'shane',kon:'kon',parhan:'parhan',rifren:'rifren',humanAssassin:'humanAssassin',balloon:'balloon',scout:'scout',apprentice:'isaac',phil:'phil',rifle:'rifle',cannon:'cannon',isaac:'isaac',seline:'seline',cavalry:'knight',knight:'knight',archer:'humanArcher',heavy:'heavy',healer:'healer'}[type]||'human';}
-  function enemyWeights(n){
+  function enemySprite(type){return {egyptian:'egyptian',sphinx:'sphinx',anubis:'anubis',pharaoh:'pharaoh',robin:'robin',laserKai:'laserKai',shane:'shane',kon:'kon',parhan:'parhan',rifren:'rifren',humanAssassin:'humanAssassin',balloon:'balloon',scout:'scout',apprentice:'isaac',phil:'phil',rifle:'rifle',cannon:'cannon',isaac:'isaac',seline:'seline',cavalry:'knight',knight:'knight',archer:'humanArcher',heavy:'heavy',healer:'healer'}[type]||'human';}
+  function baseEnemyWeights(n){
     if(n>=41){const extra=(n>=53?.03:0)+(n>=61?.03:0),m=(.98-extra)/.98;return {grunt:.20*m,apprentice:.02,healer:.10*m,cavalry:.08*m,rifle:.312*m,heavy:.208*m,cannon:.08*m,...(n>=53?{humanAssassin:.03}:{}),...(n>=61?{balloon:.03}:{})};}if(n>=21)return {grunt:n>=26?.22:.30,healer:.10,cavalry:.08,rifle:.312,heavy:.208,...(n>=26?{cannon:.08}:{})};
     if(n>=11){const t=Math.min(1,(n-11)/10),grunt=.5-.2*t,healer=.08+.02*t,cavalry=n<15?0:.06+.02*Math.min(1,(n-15)/6),rest=1-grunt-healer-cavalry;return {grunt,healer,cavalry,archer:rest*.6,heavy:rest*.4};}
     const healer=n>=8?.04+(n-8)*(.04/3):0,heavy=n>=5?.08+(n-5)*.012:0,archer=n>=3?.16+(n-3)*.008:0;return {grunt:1-healer-heavy-archer,healer,cavalry:0,archer,heavy};
   }
+  function enemyWeights(n){const weights=baseEnemyWeights(n);if(n>=51&&n<=79&&n%10!==0){const fixed=['apprentice','humanAssassin','balloon'],fixedTotal=Object.entries(weights).reduce((sum,[k,v])=>sum+(fixed.includes(k)?v:0),0),scale=(1-fixedTotal-.15)/(1-fixedTotal);for(const k in weights)if(!fixed.includes(k))weights[k]*=scale;return {egyptian:.15,...weights};}return weights;}
   function chooseEnemy(n,roll=Math.random()){let total=0;for(const [type,weight] of Object.entries(enemyWeights(n))){total+=weight;if(roll<total)return type;}return 'grunt';}
   function spawnEnemy(){
     if(S.bossStage&&stageNo!==20)return;
@@ -438,7 +457,7 @@ Object.assign(UNIT_NAMES,Object.fromEntries(Object.entries(RARE).map(([k,v])=>[k
 
   function refreshPlayerStats(){if(!S)return;for(const u of S.units){const st=unitStats(u),ratio=u.m>0?Math.max(0,u.h/u.m):1;Object.assign(u,{m:st.hp,h:st.hp*ratio,d:st.d*(u.potion==='red'?1.5:1),r:st.r,v:st.v*(u.potion==='blue'?1.3:1),a:st.a,def:st.def});}}
   function hitEnemy(t,raw,attacker){
-    if(t.h<=0||isSheltered(t)||S.time<(t.invincibleUntil||0))return 0;
+    if(S.desert&&S.desert.phase!=='fight')return 0;if(t.h<=0||isSheltered(t)||S.time<(t.invincibleUntil||0))return 0;
     if((t.type==='seline'||t.type==='fallenSeline')&&S.time<(t.barrierUntil||0)){t.blockUntil=S.time+.4;return 0;}
     const damage=Math.min(t.h,Math.max(1,raw-(t.def||0))*(S.time<(t.guardUntil||0)?['isaac','apprentice','fallenIsaac','fallen_apprentice'].includes(t.type)?.2:t.type==='grunt'?.1:1:1));t.h-=damage;if(attacker)t.lootOwner=attacker;rareHitReaction(t,damage);
     if((t.type==='seline'||t.type==='fallenSeline')&&t.h>0&&Math.random()<.2){t.barrierStart=S.time;t.barrierUntil=S.time+1.5;}
@@ -480,7 +499,7 @@ Object.assign(UNIT_NAMES,Object.fromEntries(Object.entries(RARE).map(([k,v])=>[k
     for(const u of S.units)if(u.h>0&&['observer','fallen_scout'].includes(u.type))for(const e of S.enemies)if(e.h>0&&Math.abs(e.x-u.x)<=120)e.revealedUntil=S.time+.1;
     for(const e of S.enemies)if(e.h>0&&e.type==='scout')for(const u of S.units)if(u.h>0&&Math.abs(u.x-e.x)<=120)u.revealedUntil=S.time+.1;
   }
-  function updateScouts(dt){if(stageNo<47)return;S.scoutClock??=10;S.scoutClock-=dt;while(S.scoutClock<=0){S.scoutClock+=10;if(S.units.some(u=>u.h>0&&isHidden(u))&&Math.random()<.5){const st=enemyStats('scout');S.enemies.push({type:'scout',x:690,y:GROUND,h:st.hp,m:st.hp,...st,def:1,cd:0,anim:0,attack:0,facing:-1});}}}
+  function updateScouts(dt){if(stageNo<47||S.desert)return;S.scoutClock??=10;S.scoutClock-=dt;while(S.scoutClock<=0){S.scoutClock+=10;if(S.units.some(u=>u.h>0&&isHidden(u))&&Math.random()<.5){const st=enemyStats('scout');S.enemies.push({type:'scout',x:690,y:GROUND,h:st.hp,m:st.hp,...st,def:1,cd:0,anim:0,attack:0,facing:-1});}}}
   function newStealthTick(u,side,dt){
     const source=NEW_UNITS[u.type]?.source||u.type,ally=side==='player';if(!['scout','balloon','humanAssassin'].includes(source))return false;
     u.anim=(u.anim||0)+dt;u.attack=Math.max(0,(u.attack||0)-dt);u.cd=Math.max(0,(u.cd||0)-dt*(u.buff?1.2:1));const speed=u.v*(u.buff?1.2:1),dir=ally?1:-1;
@@ -522,7 +541,7 @@ Object.assign(UNIT_NAMES,Object.fromEntries(Object.entries(RARE).map(([k,v])=>[k
   function targetIdentity(u){if(!u)return null;if(!u.unitId)u.unitId=(S.nextUnitId=(S.nextUnitId||0)+1);return u.unitId;}
   function shotTarget(id,x){return id?[...S.units,...S.enemies].find(u=>u.unitId===id)||{h:0,x}:null;}
 
-  function combatStep(u,side,dt){if(u.type==='robinHut')return;if(u.h>0&&!(S.time<(u.stunUntil||0))){if(u.type==='laserKai'){laserTick(u,dt);return;}if(u.type==='robin'||u.type==='fallenRobin'){robinTick(u,side,dt);return;}}if(u.h<=0||S.time<(u.stunUntil||0))return;if(mercenaryTick(u,side,dt))return;if(newStealthTick(u,side,dt))return;if(u.type==='observer'&&side==='player'){observerTick(u,dt);return;}if(advancedTick(u,side,dt))return;
+  function combatStep(u,side,dt){if(desertCombat(u,dt,side))return;if(u.type==='robinHut')return;if(u.h>0&&!(S.time<(u.stunUntil||0))){if(u.type==='laserKai'){laserTick(u,dt);return;}if(u.type==='robin'||u.type==='fallenRobin'){robinTick(u,side,dt);return;}}if(u.h<=0||S.time<(u.stunUntil||0))return;if(mercenaryTick(u,side,dt))return;if(newStealthTick(u,side,dt))return;if(u.type==='observer'&&side==='player'){observerTick(u,dt);return;}if(advancedTick(u,side,dt))return;
     if(u.h<=0)return;if(u.type==='rifle'||u.type==='cannon'){gunnerTick(u,dt);return;}if(u.type==='grunt'&&stageNo>=17){gruntTick(u,dt);return;}if(u.type==='isaac'||u.type==='apprentice'){isaacTick(u,dt);return;}if(side==='player'&&RARE[u.type]){rareTick(u,dt);return;}if(side==='player'&&u.type==='pirate'){pirateTick(u,dt);return;}if(side==='player'&&u.type==='assassin'){assassinTick(u,dt);return;}if(u.type==='seline'){selineTick(u,dt);return;}if(u.type==='knight'){knightTick(u,dt);return;}if(u.type==='knight'&&S.time<(S.bossWakeAt??15)){u.anim=0;u.attack=0;return;}if(side==='enemy'&&u.type==='healer'){healerTick(u,dt);return;}u.anim=(u.anim||0)+dt;u.attack=Math.max(0,(u.attack||0)-dt);u.guard=Math.max(0,(u.guard||0)-dt);u.cd=Math.max(0,u.cd-dt*(u.buff?1.2:1));
     const foes=side==='player'?S.enemies:S.units,[t,dist]=nearest(u,foes),base=side==='player'?enemyBaseX():232,bd=Math.abs(base-u.x);
     const stationaryRanged=side==='player'&&(u.type==='archer'||u.type==='crossbow'||u.type==='javelin');
@@ -583,7 +602,7 @@ Object.assign(UNIT_NAMES,Object.fromEntries(Object.entries(RARE).map(([k,v])=>[k
       if(stageNo>=2&&!profile.archerUnlocked){profile.archerUnlocked=true;unlocks.push('🔓 스켈레톤궁수 해금! 이제 궁수를 생산할 수 있습니다.');}
       if(stageNo>=9&&!profile.assaultUnlocked){profile.assaultUnlocked=true;unlocks.push('🔓 스켈레톤 돌격병 해금! 빠른 이동과 연속 공격으로 돌격합니다.');}
       if(stageNo>=5&&!profile.shieldUnlocked){profile.shieldUnlocked=true;unlocks.push('🔓 스켈레톤 방패병 해금! 공격 없이 전선을 지키는 수비 유닛입니다.');}
-      unlockAdvanced();refreshPlayerStats();sfx('win');UI.rTitle.textContent='STAGE CLEAR';UI.rDesc.textContent=(S.bossStage?(stageNo===50?'로빈 훗':stageNo===40?'용병단':stageNo===30?'필':stageNo===20?'셀리네':'원정대장 프라함')+'를 쓰러뜨렸습니다! 다음 스테이지는 '+stageLabel(stageNo+1)+'입니다.\n':'')+(unlocks.length?unlocks.join('\n'):S.bossStage?'':'적의 성을 파괴했습니다.');
+      unlockAdvanced();refreshPlayerStats();sfx('win');UI.rTitle.textContent='STAGE CLEAR';UI.rDesc.textContent=(S.bossStage?(S.desert?desertName():stageNo===50?'로빈 훗':stageNo===40?'용병단':stageNo===30?'필':stageNo===20?'셀리네':'원정대장 프라함')+'를 쓰러뜨렸습니다! 다음 스테이지는 '+stageLabel(stageNo+1)+'입니다.\n':'')+(unlocks.length?unlocks.join('\n'):S.bossStage?'':'적의 성을 파괴했습니다.');
       UI.xp.innerHTML=earned.map(t=>{const a=S.activity[t];return '<div>'+UNIT_NAMES[t]+' EXP +'+gains[t]+'</div><div class="xpBreakdown">피해 '+Math.floor(a.damage)+' · 성 피해 '+Math.floor(a.castle)+' · 처치 '+S.kills[t]+' · 받은/막은 피해 '+Math.floor(a.taken+a.blocked)+'</div>';}).join('');
       q('#resultNext').textContent=S.isReplay?frontierLabel():S.bossStage?stageLabel(stageNo+1)+'로 이동':'다음 스테이지';q('#resultNext').disabled=false; q('#resultNext').style.opacity='1'; q('#resultIcon').textContent='🏆';
     } else {
@@ -597,7 +616,7 @@ Object.assign(UNIT_NAMES,Object.fromEntries(Object.entries(RARE).map(([k,v])=>[k
   function isEx(type){return RARE[type]?.tier==='ex';}
   function loadoutCount(){return (profile.loadout||[]).filter(t=>!isEx(t)).length;}
   function isSheltered(u){return !!u&&u.hiddenUntil!==undefined;}
-  function specialHitReaction(u,damage){if(damage<=0)return;if(u.type==='laserKai'&&u.charge>0){u.charge=0;u.attack=0;}if((u.type==='robin'||u.type==='fallenRobin')&&u.h>0&&u.retreatTo===undefined&&!isSheltered(u)&&Math.random()<.15){const dir=u.type==='robin'?1:-1;u.retreatTo=Math.max(unitMargin(u),Math.min(worldWidth()-unitMargin(u),u.x+dir*300));u.attack=0;delete u.jumpAge;delete u.robinShot;}}
+  function specialHitReaction(u,damage){if(damage<=0)return;if(u.type==='laserKai'&&u.charge>0){u.charge=0;u.attack=0;}if((u.type==='robin'||u.type==='fallenRobin')&&u.h>0&&u.retreatTo===undefined&&!isSheltered(u)&&Math.random()<.15){const dir=u.type==='robin'?1:-1;u.retreatTo=Math.max(unitMargin(u),Math.min(worldWidth()-unitMargin(u),u.x+dir*400));u.attack=0;delete u.jumpAge;delete u.robinShot;}}
   function laserTick(u,dt){u.anim=(u.anim||0)+dt;u.stationary=true;if(u.beamRemaining>0){const elapsed=Math.min(dt,u.beamRemaining);u.beamRemaining=Math.max(0,u.beamRemaining-elapsed);u.beamClock=(u.beamClock||0)+elapsed;while(u.beamClock>=.5-1e-8){u.beamClock-=.5;for(const e of S.enemies)if(e.h>0&&!isSheltered(e)&&e.x>=u.x&&e.x<=u.x+500){const dealt=hitEnemy(e,u.d,u);if(S.activity[u.type])S.activity[u.type].damage+=dealt;}if(!S.bossStage&&enemyBaseX()>=u.x&&enemyBaseX()<=u.x+500)S.eh=Math.max(0,S.eh-u.d);}if(!u.beamRemaining){u.charge=0;u.attack=0;}return;}
     const target=S.enemies.find(e=>e.h>0&&canTarget(u,e)&&e.x>=u.x&&e.x-u.x<=200),castle=!S.bossStage&&enemyBaseX()-u.x<=200;
     if(target||castle||u.charge>0){u.charge=(u.charge||0)+dt;if(u.charge>=8-1e-8){u.charge=0;u.beamRemaining=8;u.beamClock=0;}return;}u.x=Math.min(worldRight(),u.x+u.v*dt);u.stationary=false;
@@ -606,7 +625,7 @@ Object.assign(UNIT_NAMES,Object.fromEntries(Object.entries(RARE).map(([k,v])=>[k
   function updateRobinShot(u,side,dt){const shot=u.robinShot;if(!shot)return;shot.elapsed+=dt;if(shot.elapsed+1e-8<shot.release)return;delete u.robinShot;const target=shotTarget(shot.targetId,shot.toX);const origin=robinBow(u,side==='enemy');S.effects.push({kind:'balloonArrow',from:origin.x,to:shot.toX,fromY:origin.y,toY:GROUND-(target&&isAir(target)?118:28),age:0,flight:Math.max(.08,Math.abs(shot.toX-origin.x)/650),life:3,target,side,owner:u,damage:shot.damage});}
   function robinTick(u,side,dt){const enemy=side==='enemy',dir=enemy?-1:1;u.anim=(u.anim||0)+dt;u.attack=Math.max(0,(u.attack||0)-dt);u.cd=Math.max(0,(u.cd||0)-dt);const hut=enemy?S.enemies.find(e=>e.type==='robinHut'&&e.h>0):null,home=enemy?hut?.x:250,homeAlive=enemy?!!hut:S.ph>0;
     if(isSheltered(u)){u.stationary=true;if(!homeAlive||S.time>=u.hiddenUntil){if(homeAlive)u.h=Math.min(u.m,u.h+500);delete u.hiddenUntil;u.x=homeAlive?home+dir*45:u.x;u.cd=.5;}return;}
-    if(u.retreatTo!==undefined){u.stationary=false;u.retreatTo=Math.max(unitMargin(u),Math.min(worldWidth()-unitMargin(u),u.retreatTo));const back=-dir,step=130*dt;u.x+=back*Math.min(step,Math.abs(u.retreatTo-u.x));if(homeAlive&&((enemy&&u.x>=home-12)||(!enemy&&u.x<=home+12))){u.x=home;u.hiddenUntil=S.time+3;delete u.retreatTo;return;}if(Math.abs(u.x-u.retreatTo)<.01)delete u.retreatTo;return;}
+    if(u.retreatTo!==undefined){u.stationary=false;u.retreatTo=Math.max(unitMargin(u),Math.min(worldWidth()-unitMargin(u),u.retreatTo));const back=-dir,step=180*dt;u.x+=back*Math.min(step,Math.abs(u.retreatTo-u.x));if(homeAlive&&((enemy&&u.x>=home-12)||(!enemy&&u.x<=home+12))){u.x=home;u.hiddenUntil=S.time+3;delete u.retreatTo;return;}if(Math.abs(u.x-u.retreatTo)<.01)delete u.retreatTo;return;}
     if(u.jumpAge!==undefined){u.jumpAge+=dt;u.x=Math.max(22,Math.min(worldRight(),u.jumpStart-dir*100*Math.min(1,u.jumpAge/.5)));updateRobinShot(u,side,dt);if(u.jumpAge>=.5)delete u.jumpAge;return;}
     updateRobinShot(u,side,dt);
     const foes=(enemy?S.units:S.enemies).filter(e=>e.h>0&&canTarget(u,e)).sort((a,b)=>Math.abs(a.x-u.x)-Math.abs(b.x-u.x));const target=foes[0],distance=target?Math.abs(target.x-u.x):Infinity,base=enemy?232:enemyBaseX(),castle=(enemy||!S.bossStage)&&Math.abs(base-u.x)<=u.r;
@@ -620,15 +639,15 @@ Object.assign(UNIT_NAMES,Object.fromEntries(Object.entries(RARE).map(([k,v])=>[k
   function drawLaser(u){if(!(u.beamRemaining>0))return;ctx.save();const {x,y}=laserMuzzle(u),width=Math.max(0,Math.min(u.x+500,worldRight())-x);ctx.globalAlpha=.8+.15*Math.sin(S.time*40);ctx.shadowColor='#20bfff';ctx.shadowBlur=16;ctx.fillStyle='#1b9fff';ctx.fillRect(x,y-15,width,30);ctx.fillStyle='#7ceeff';ctx.fillRect(x,y-7.5,width,15);ctx.fillStyle='#fff';ctx.fillRect(x,y-3,width,6);if(FRAMES.laserBeam)ctx.drawImage(FRAMES.laserBeam,x,y-19.5,width,39);ctx.restore();}
 
   function update(dt){
-    if(!S||onMain||S.pause||S.over||chapterStory?.opening)return; S.time+=dt;mercenaryCamera();if(bossIntroActive())return;updateMercenaryShots(dt);if(stageNo===8&&!S.isaacSpawned&&S.time>=15){spawnIsaac();}S.effects=S.effects.filter(e=>(e.life-=dt)>0);
+    if(!S||onMain||S.pause||S.over||chapterStory?.opening)return; S.time+=dt;if(desertIntroTick(dt))return;mercenaryCamera();if(bossIntroActive())return;updateMercenaryShots(dt);if(stageNo===8&&!S.isaacSpawned&&S.time>=15){spawnIsaac();}S.effects=S.effects.filter(e=>(e.life-=dt)>0);
     for(const w of S.workers){workerTick(w,dt);clampUnit(w);}
     for(const k of Object.keys(S.build)){if(S.build[k]>0){S.build[k]-=dt;if(S.build[k]<=0){S.build[k]=0;finishBuild(k)}}}
     updateAdvancedEffects(dt);updateDragonFear(dt);updateSpears(dt);updateShells(dt);updateBombs(dt);updateMagic(dt);S.spawn-=dt; if(S.spawn<=0)spawnEnemy();
-    updateScouts(dt);updateDetection();updateBalloonArrows(dt);updateAuras(dt);for(const u of S.units)combatTick(u,'player',dt); for(const e of S.enemies)combatTick(e,'enemy',dt);
-    for(const e of S.enemies)if(e.h<=0){if(transformUnit(e))continue;if(e.type==='cannon'&&!e.deathBurst){e.deathBurst=true;cannonBlast(e.x,80,40);}awardDrop(e);}
-    for(const u of [...S.units])if(u.h<=0){if(u.type==='invisibleSkeleton'&&!u.handsDropped){u.handsDropped=true;for(const offset of [-5,5]){const st=stats('cursedHand');S.units.push({type:'cursedHand',handSide:offset<0?'left':'right',stealthed:true,x:u.x+offset,y:GROUND,h:st.hp,m:st.hp,d:st.d,r:st.r,a:st.a,v:st.v,def:st.def,cd:.1,anim:0,attack:0});S.used.cursedHand=(S.used.cursedHand||0)+1;}}if(transformUnit(u))continue;if(u.type==='fallen_cannon'&&!u.deathBurst){u.deathBurst=true;alliedBurst(u,80,40);}}for(const list of [S.units,S.enemies])for(const u of list)if(u.h<=0&&u.type!=='robinHut')S.corpses.push({...u,death:0,enemy:list===S.enemies});
+    updateScouts(dt);updateDetection();updateBalloonArrows(dt);updateAuras(dt);updateDesertEffects(dt);for(const u of S.units)combatTick(u,'player',dt); for(const e of S.enemies)combatTick(e,'enemy',dt);
+    desertDeaths();for(const e of S.enemies)if(e.h<=0){if(transformUnit(e))continue;if(e.type==='cannon'&&!e.deathBurst){e.deathBurst=true;cannonBlast(e.x,80,40);}awardDrop(e);}
+    for(const u of [...S.units])if(u.h<=0){if(u.type==='invisibleSkeleton'&&!u.handsDropped){u.handsDropped=true;for(const offset of [-5,5]){const st=stats('cursedHand');S.units.push({type:'cursedHand',handSide:offset<0?'left':'right',stealthed:true,x:u.x+offset,y:GROUND,h:st.hp,m:st.hp,d:st.d,r:st.r,a:st.a,v:st.v,def:st.def,cd:.1,anim:0,attack:0});S.used.cursedHand=(S.used.cursedHand||0)+1;}}if(transformUnit(u))continue;if(u.type==='fallen_cannon'&&!u.deathBurst){u.deathBurst=true;alliedBurst(u,80,40);}}for(const list of [S.units,S.enemies])for(const u of list)if(u.h<=0&&!['robinHut','pyramid'].includes(u.type))S.corpses.push({...u,death:0,enemy:list===S.enemies});
     S.corpses=S.corpses.filter(u=>(u.death+=dt)<1.3);
-    if(stageNo===40&&S.mercenaryBattle){S.eh=S.enemies.reduce((sum,e)=>sum+(MERCENARIES[e.type]?Math.max(0,e.h):0),0);}else if(S.bossStage){const boss=S.enemies.find(e=>e.type===(stageNo===50?'robin':stageNo===30?'phil':stageNo===20?'seline':'knight'));S.eh=boss?Math.max(0,boss.h):0;}
+    if(S.desert){S.eh=S.enemies.reduce((v,e)=>v+(DESERT_STATS[e.type]?Math.max(0,e.h):0),0);if(S.desert.deathAt||S.desert.coffinAt)S.eh=Math.max(1,S.eh);}else if(stageNo===40&&S.mercenaryBattle){S.eh=S.enemies.reduce((sum,e)=>sum+(MERCENARIES[e.type]?Math.max(0,e.h):0),0);}else if(S.bossStage){const boss=S.enemies.find(e=>e.type===(stageNo===50?'robin':stageNo===30?'phil':stageNo===20?'seline':'knight'));S.eh=boss?Math.max(0,boss.h):0;}
     S.units=S.units.filter(v=>v.h>0); S.enemies=S.enemies.filter(v=>v.h>0); S.ph=Math.max(0,S.ph); S.eh=Math.max(0,S.eh);
     if(S.eh<=0&&stageNo===30&&!S.philSpawned)spawnPhil();else if(S.eh<=0)clearStage(true); else if(S.ph<=0)clearStage(false);
   }
@@ -646,13 +665,13 @@ Object.assign(UNIT_NAMES,Object.fromEntries(Object.entries(RARE).map(([k,v])=>[k
     for(let i=0;i<points.length;i++){const [x,y]=points[i];flame(ctx,left+x*width,top+y*height,damaged?10:7,time,i+Number(enemy)*4);}
   }
   function drawCastle(x,y,enemy=false){if(enemy&&S.bossStage)return;const hp=enemy?(stageNo===40?1:S.eh/S.em):S.ph/S.pm;const key=enemy?'humanCastle':'skeletonCastle';const frames=FRAMES[key];if(!frames)return;const im=frames[hp<=0?2:hp<.5?1:0];const width=enemy?159:174;drawScenery(im,enemy?enemyBaseX()-60:90,GROUND-im.height/im.width*width,width,im.height/im.width*width);if(!reducedMotion?.matches&&!(enemy&&stageNo===40))castleFire(enemy,hp,im,width);}
-  function drawEnemy(e){if(e.type==='robinHut'){drawRobinHut(e);return;}if(isSheltered(e))return;drawStun(e);drawSprite(enemySprite(e.type),e,false);if(e.type==='seline')drawBarrier(e);!['knight','seline'].includes(e.type)&&drawHp(e.x-18-(e.type==='heavy'?12:0),GROUND-60-(e.type==='balloon'?170:isAir(e)?78:0),36,e.h/e.m,true)}
+  function drawEnemy(e){if(e.coffinUntil){const frames=FRAMES.pharaoh?.death;if(frames)ctx.drawImage(frames[frames.length-1],e.x-84,GROUND-128,168,128);return;}if(e.type==='pharaoh'&&S.time<(e.invincibleUntil||0)){ctx.save();ctx.shadowColor='#fff4a0';ctx.shadowBlur=35;drawSprite('pharaoh',e,false);ctx.restore();return;}if(e.type==='pyramid'){if(FRAMES.pyramid)ctx.drawImage(FRAMES.pyramid,e.x-130,GROUND-175,260,175);drawHp(e.x-60,GROUND-185,120,e.h/e.m,true);return;}if(e.type==='robinHut'){drawRobinHut(e);return;}if(isSheltered(e))return;drawStun(e);drawSprite(enemySprite(e.type),e,false);if(e.type==='seline')drawBarrier(e);!['knight','seline'].includes(e.type)&&drawHp(e.x-18-(e.type==='heavy'?12:0),GROUND-60-(e.type==='balloon'?170:isAir(e)?78:0),36,e.h/e.m,true)}
   function drawUnit(u){if(isSheltered(u)){drawRecovery(250);return;}if(u.type==='laserKai')drawLaser(u);if(u.type==='banner'){ctx.save();ctx.strokeStyle=(profile.level.banner||1)>=10?'#ff4242aa':'#e8b96a66';ctx.beginPath();ctx.ellipse(u.x,GROUND,bannerRange(),12,0,0,Math.PI*2);ctx.stroke();ctx.restore();}if(u.buff){ctx.fillStyle=u.buffRed?'#ff4242':'#ffcf7b';ctx.font='10px system-ui';ctx.fillText('▲',u.x,GROUND-65);}drawSprite(u.type,u);if(u.type==='fallenSeline'){drawBarrier(u);drawOrbit(u);}drawStun(u);drawHp(u.x-20,GROUND-60-(u.type==='fallen_balloon'?170:isAir(u)?78:0),40,u.h/u.m,false)}
   function drawWorker(w){drawSprite(w.type,w,w.phase==='out');}
   function drawHp(x,y,w,p,e){ctx.fillStyle='rgba(0,0,0,.45)';ctx.fillRect(x,y,w,4);ctx.fillStyle=e?'#9a4e4e':'#668459';ctx.fillRect(x,y,w*Math.max(0,Math.min(1,p)),4)}
   function draw(){
     if(!S)return;
-    ctx.save();ctx.translate(-(S.cameraX||0),0);if(stageNo===50&&FRAMES.winterWide){const im=FRAMES.winterWide;ctx.drawImage(im,0,60,im.width,im.height*.70-60,0,0,1600,350);}else if(stageNo===40&&FRAMES.mercenaryBackground){const im=FRAMES.mercenaryBackground;ctx.drawImage(im,0,80,im.width,im.height-80,0,0,1600,350);ctx.fillStyle="rgba(0,0,0,.22)";ctx.fillRect(0,0,1600,350);}else for(let tile=0;tile<worldWidth()/800;tile++){ctx.save();ctx.translate(tile*800,0);
+    ctx.save();ctx.translate(-(S.cameraX||0),0);if(stageNo>=51&&stageNo<=80&&FRAMES.desertWide){const im=FRAMES.desertWide;ctx.drawImage(im,0,100,im.width,im.height-100,0,0,worldWidth(),350);}else if(stageNo===50&&FRAMES.winterWide){const im=FRAMES.winterWide;ctx.drawImage(im,0,60,im.width,im.height*.70-60,0,0,1600,350);}else if(stageNo===40&&FRAMES.mercenaryBackground){const im=FRAMES.mercenaryBackground;ctx.drawImage(im,0,80,im.width,im.height-80,0,0,1600,350);ctx.fillStyle="rgba(0,0,0,.22)";ctx.fillRect(0,0,1600,350);}else for(let tile=0;tile<worldWidth()/800;tile++){ctx.save();ctx.translate(tile*800,0);
     const background=FRAMES.background;
     if(stageNo>=31&&FRAMES.extraBackground){const im=FRAMES.extraBackground,index=Math.min(7,Math.floor((stageNo-31)/10)),col=index%2,rr=Math.floor(index/2),ys=[0,218,423,609,801];ctx.drawImage(im,col*768,ys[rr]+48,768,ys[rr+1]-ys[rr]-50,0,0,800,350);}
     else if(background){const chapter=Math.min(2,Math.floor((stageNo-1)/10)),rows=[[0,338],[342,336],[682,342]],row=rows[chapter];
@@ -668,19 +687,19 @@ Object.assign(UNIT_NAMES,Object.fromEntries(Object.entries(RARE).map(([k,v])=>[k
     for(const w of S.workers)drawWorker(w);for(const u of S.units)drawUnit(u);for(const e of S.enemies){drawEnemy(e);if(e.type==='seline'&&e.h>0)drawOrbit(e);}
     drawHp(142,145,72,S.ph/S.pm,false);if(!S.bossStage)drawHp(685,145,72,S.eh/S.em,true);
 
-    for(const e of S.effects){if(drawMercenaryEffect(e)||drawBalloonArrow(e)||drawGunEffect(e)||drawExtraEffect(e))continue;if(drawBombEffect(e)||drawMagicEffect(e))continue;if(e.kind==='holy'){ctx.save();ctx.globalAlpha=Math.min(1,e.life*2);ctx.fillStyle='#ffdf7433';ctx.strokeStyle='#ffeaa1';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(e.x,GROUND,e.radius,12,0,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.fillStyle='#fff0ba';ctx.font='12px system-ui';ctx.textAlign='center';ctx.restore();continue;}if(e.kind==='slash'){ctx.save();ctx.globalAlpha=Math.min(1,e.life*3);if(e.wave){ctx.translate(e.x-(1-e.life)*145,GROUND-45);ctx.shadowColor='#75dcff';ctx.shadowBlur=15;ctx.fillStyle='#a9eaff';ctx.strokeStyle='#e3fbff';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-66,0);ctx.lineTo(-44,-9);ctx.lineTo(20,-6);ctx.lineTo(20,-20);ctx.lineTo(27,-20);ctx.lineTo(27,-5);ctx.lineTo(48,-5);ctx.lineTo(48,5);ctx.lineTo(27,5);ctx.lineTo(27,20);ctx.lineTo(20,20);ctx.lineTo(20,6);ctx.lineTo(-44,9);ctx.closePath();ctx.fill();ctx.stroke();}else{ctx.strokeStyle='#ffe4a3';ctx.lineWidth=4;ctx.beginPath();ctx.arc(e.x,GROUND-45,32,-1.2,1.2);ctx.stroke();}ctx.restore();continue;}ctx.save();ctx.globalAlpha=Math.min(1,e.life*2);ctx.strokeStyle='#91ef98';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(e.from,GROUND-35);ctx.lineTo(e.x,GROUND-35);ctx.stroke();ctx.fillStyle='#b4ffbd';ctx.font='bold 13px system-ui';ctx.textAlign='center';ctx.fillText('+'+Math.ceil(e.amount),e.x,GROUND-58-(1-e.life)*12);ctx.restore();}
+    for(const e of S.effects){if(drawDesertEffect(e))continue;if(drawMercenaryEffect(e)||drawBalloonArrow(e)||drawGunEffect(e)||drawExtraEffect(e))continue;if(drawBombEffect(e)||drawMagicEffect(e))continue;if(e.kind==='holy'){ctx.save();ctx.globalAlpha=Math.min(1,e.life*2);ctx.fillStyle='#ffdf7433';ctx.strokeStyle='#ffeaa1';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(e.x,GROUND,e.radius,12,0,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.fillStyle='#fff0ba';ctx.font='12px system-ui';ctx.textAlign='center';ctx.restore();continue;}if(e.kind==='slash'){ctx.save();ctx.globalAlpha=Math.min(1,e.life*3);if(e.wave){ctx.translate(e.x-(1-e.life)*145,GROUND-45);ctx.shadowColor='#75dcff';ctx.shadowBlur=15;ctx.fillStyle='#a9eaff';ctx.strokeStyle='#e3fbff';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-66,0);ctx.lineTo(-44,-9);ctx.lineTo(20,-6);ctx.lineTo(20,-20);ctx.lineTo(27,-20);ctx.lineTo(27,-5);ctx.lineTo(48,-5);ctx.lineTo(48,5);ctx.lineTo(27,5);ctx.lineTo(27,20);ctx.lineTo(20,20);ctx.lineTo(20,6);ctx.lineTo(-44,9);ctx.closePath();ctx.fill();ctx.stroke();}else{ctx.strokeStyle='#ffe4a3';ctx.lineWidth=4;ctx.beginPath();ctx.arc(e.x,GROUND-45,32,-1.2,1.2);ctx.stroke();}ctx.restore();continue;}ctx.save();ctx.globalAlpha=Math.min(1,e.life*2);ctx.strokeStyle='#91ef98';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(e.from,GROUND-35);ctx.lineTo(e.x,GROUND-35);ctx.stroke();ctx.fillStyle='#b4ffbd';ctx.font='bold 13px system-ui';ctx.textAlign='center';ctx.fillText('+'+Math.ceil(e.amount),e.x,GROUND-58-(1-e.life)*12);ctx.restore();}
     drawMercenaryIntro();ctx.restore();
-    drawBossIntro();
+    drawBossIntro();drawDesertOverlay();
 
     if(S.pause&&!S.over){ctx.fillStyle='rgba(0,0,0,.45)';ctx.fillRect(0,0,800,350);ctx.fillStyle='white';ctx.font='bold 28px system-ui';ctx.fillText('일시정지',400,175)}
   }
 
   function updateUI(){
-    updateGoldUI();updateRareShop();updateAddedShop();q('#cameraControls').classList.toggle('hidden',!S||(stageNo!==40&&stageNo!==50)||S.over||S.time<(stageNo===50?4.2:16.2));
+    updateGoldUI();updateRareShop();updateAddedShop();q('#cameraControls').classList.toggle('hidden',!S||(worldWidth()===800)||S.over||!cameraReady());
     if(!S)return;
     q('#pauseActions').classList.toggle('hidden',!S.pause||S.over);
-    q('#enemyLabel').textContent=S.bossStage?(stageNo===50?'🏹 로빈 훗':stageNo===40?'⚔ 용병단':stageNo===30?'✦ 필':stageNo===20?'✦ 셀리네':'⚔ 원정대장 프라함'):'🏰 적 성';q('#bossBanner').classList.toggle('hidden',!S.bossStage);
-    q('#bossName').textContent=stageNo===50?'로빈 훗':stageNo===40?'⚔ 용병단 · '+S.enemies.filter(e=>MERCENARIES[e.type]&&e.h>0).length+' / 4명':stageNo===30?'테넨제국의 천재소년 필':stageNo===20?'✦ 프렌의 수호마법사 셀리네':'⚔ 원정대장 프라함';if(S.bossStage){q('#bossGauge').style.width=(100*S.eh/S.em)+'%';q('#bossGauge').parentElement.setAttribute('aria-valuenow',Math.round(100*S.eh/S.em));}
+    q('#enemyLabel').textContent=S.bossStage?(S.desert?desertName():stageNo===50?'🏹 로빈 훗':stageNo===40?'⚔ 용병단':stageNo===30?'✦ 필':stageNo===20?'✦ 셀리네':'⚔ 원정대장 프라함'):'🏰 적 성';q('#bossBanner').classList.toggle('hidden',!S.bossStage);
+    q('#bossName').textContent=S.desert?desertName():stageNo===50?'로빈 훗':stageNo===40?'⚔ 용병단 · '+S.enemies.filter(e=>MERCENARIES[e.type]&&e.h>0).length+' / 4명':stageNo===30?'테넨제국의 천재소년 필':stageNo===20?'✦ 프렌의 수호마법사 셀리네':'⚔ 원정대장 프라함';if(S.bossStage){q('#bossGauge').style.width=(100*S.eh/S.em)+'%';q('#bossGauge').parentElement.setAttribute('aria-valuenow',Math.round(100*S.eh/S.em));}
     UI.wood.textContent=Math.floor(S.wood);UI.coal.textContent=Math.floor(S.coal);UI.pop.textContent=pop()+' / '+S.cap;UI.php.textContent=Math.ceil(S.ph);UI.ehp.textContent=S.bossStage?'BOSS':Math.ceil(S.eh);
     UI.timer.textContent=Math.floor(S.time/60)+':'+Math.floor(S.time%60).toString().padStart(2,'0'); UI.archerLock.classList.toggle('hidden',profile.archerUnlocked);
     const melee=profile.evolved?'warrior':'soldier'; UI.soldierLv.textContent='Lv.'+profile.level[melee]+' · EXP '+profile.xp[melee]+'/100'; q('#meleeName').textContent=profile.evolved?'스켈레톤 워리어':'스켈레톤병';q('#meleeCost').textContent=costText(melee);if(FRAMES[melee]&&q('#soldierIcon').dataset.unit!==melee){q('#soldierIcon').src=FRAMES[melee].walk[0].toDataURL();q('#soldierIcon').dataset.unit=melee;q('#soldierIcon').alt=profile.evolved?'스켈레톤 워리어':'스켈레톤 병사';} UI.archerLv.textContent='Lv.'+profile.level.archer+' · EXP '+profile.xp.archer+'/100';
@@ -923,8 +942,8 @@ redeemRareTickets();unlockAdvanced();if(S){for(const key of Object.keys(NEW_UNIT
   function bannerRange(){return (profile.level.banner||1)>=10?180:120;}
   function unlockAdvanced(){profile.advancedUnlocked??=[];if((profile.clearedStages||[]).some(n=>n>=51)&&!profile.advancedUnlocked.includes('observer')){profile.advancedUnlocked.push('observer');profile.level.observer??=1;profile.xp.observer??=0;}for(const [from,level,to] of [['warrior',15,'greatWarrior'],['pirate',7,'captain'],['heavyShield',20,'shieldKnight']])if((profile.level[from]||1)>=level&&!profile.advancedUnlocked.includes(to)){profile.advancedUnlocked.push(to);profile.level[to]??=1;profile.xp[to]??=0;}if(S&&profile.advancedUnlocked.includes('greatWarrior'))evolveField('warrior','greatWarrior');}
   function recruitUnit(key){const list=RARE[key]?(profile.rareUnlocked??=[]):(profile.advancedUnlocked??=[]);if(list.includes(key))return false;list.push(key);profile.level[key]??=1;profile.xp[key]??=0;normalizeLoadout();if((isEx(key)||loadoutCount()<4)&&!profile.loadout.includes(key))profile.loadout.push(key);S.unlockQueue=[...new Set([...(S.unlockQueue||[]),key])];msg(UNIT_NAMES[key]+' 합류!');showUnlock();save();return true;}
-  function tryRecruit(enemy){if(enemy.recruitRolled)return;enemy.recruitRolled=true;const boss=stageNo===50&&enemy.type==='robin'?'fallenRobin':stageNo===40&&MERCENARIES[enemy.type]?'fallen_'+enemy.type:enemy.type==='knight'&&stageNo===10?'fallenFraham':enemy.type==='isaac'&&stageNo===8?'fallenIsaac':enemy.type==='seline'&&stageNo===20?'fallenSeline':enemy.type==='phil'&&stageNo===30&&enemy.phase===2?'fallenPhil':null;const key=boss||('fallen_'+enemy.type);if(!RARE[key]&&!NEW_UNITS[key])return;if((profile.rareUnlocked||[]).includes(key)||(profile.advancedUnlocked||[]).includes(key))return;if(Math.random()<(boss==='fallenRobin'?.005:boss?.01:.0003))recruitUnit(key);}
-  function transformUnit(u){if(u.h>0)return false;if(u.type==='shieldKnight'&&!u.axeForm){u.axeForm=true;Object.assign(u,{h:200,m:200,d:60*(u.potion==='red'?1.5:1),v:35*(u.potion==='blue'?1.3:1),a:1.75,r:55,def:5,cd:.2,attack:0});return true;}if((u.type==='phil'||u.type==='fallenPhil')&&u.phase!==2){const ally=u.type==='fallenPhil';u.phase=2;Object.assign(u,{h:ally?750:1500,m:ally?750:1500,v:55*(u.potion==='blue'?1.3:1),d:80*(u.potion==='red'?1.5:1),a:.3,r:70,def:0,cd:.3,attack:0,attackCount:0});if(!ally){S.eh=S.em=1500;beginBossIntro('phil','필','아직 끝이 아니야..!');}return true;}return false;}
+  function tryRecruit(enemy){if(enemy.recruitRolled)return;enemy.recruitRolled=true;const boss=enemy.type==='sphinx'?'fallenSphinx':enemy.type==='anubis'?'fallenAnubis':enemy.type==='pharaoh'?'fallenPharaoh':stageNo===50&&enemy.type==='robin'?'fallenRobin':stageNo===40&&MERCENARIES[enemy.type]?'fallen_'+enemy.type:enemy.type==='knight'&&stageNo===10?'fallenFraham':enemy.type==='isaac'&&stageNo===8?'fallenIsaac':enemy.type==='seline'&&stageNo===20?'fallenSeline':enemy.type==='phil'&&stageNo===30&&enemy.phase===2?'fallenPhil':null;const key=boss||('fallen_'+enemy.type);if(!RARE[key]&&!NEW_UNITS[key])return;if((profile.rareUnlocked||[]).includes(key)||(profile.advancedUnlocked||[]).includes(key))return;if(Math.random()<(['fallenRobin','fallenPharaoh'].includes(boss)?.005:boss?.01:.0003))recruitUnit(key);}
+  function transformUnit(u){if(u.h>0)return false;if(u.type==='fallenPharaoh'&&Math.random()<.6){u.h=1;u.coffinUntil=S.time+2;u.invincibleUntil=u.coffinUntil;u.attack=0;return true;}if(u.type==='shieldKnight'&&!u.axeForm){u.axeForm=true;Object.assign(u,{h:200,m:200,d:60*(u.potion==='red'?1.5:1),v:35*(u.potion==='blue'?1.3:1),a:1.75,r:55,def:5,cd:.2,attack:0});return true;}if((u.type==='phil'||u.type==='fallenPhil')&&u.phase!==2){const ally=u.type==='fallenPhil';u.phase=2;Object.assign(u,{h:ally?750:1500,m:ally?750:1500,v:55*(u.potion==='blue'?1.3:1),d:80*(u.potion==='red'?1.5:1),a:.3,r:70,def:0,cd:.3,attack:0,attackCount:0});if(!ally){S.eh=S.em=1500;beginBossIntro('phil','필','아직 끝이 아니야..!');}return true;}return false;}
   function spawnPhil(){S.philSpawned=true;S.bossStage=true;S.spawn=Infinity;const u={type:'phil',phase:1,x:690,h:1500,m:1500,v:35,d:50,a:.5,r:50,def:0,cd:.5,anim:0,attack:0};S.enemies.push(u);S.eh=S.em=1500;beginBossIntro('phil','테넨제국의 천재소년 필','따분한 참이었는데 잘됐군..');for(const v of S.units)if(v.h>0&&Math.abs(v.x-u.x)<=200)hurtSkeleton(v,300);}
   function alliedBurst(u,radius,raw){for(const target of S.enemies)if(target.h>0&&Math.abs(target.x-u.x)<=radius){const d=hitEnemy(target,raw*(u.buff?1.2:1),u);S.activity[u.type].damage+=d;if(target.h<=0)S.kills[u.type]++;}if(!S.bossStage&&Math.abs(enemyBaseX()-u.x)<=radius){const d=Math.min(S.eh,raw);S.eh-=d;S.activity[u.type].castle+=d;}S.effects.push({kind:'cannonBlast',x:u.x,radius,life:.45});}
   function alliedStrike(u,range,raw,aoe=false,limit=Infinity){const candidates=S.enemies.filter(e=>e.h>0&&(aoe||canTarget(u,e))&&e.x>=u.x-10&&e.x-u.x<=range).sort((a,b)=>a.x-b.x),targets=candidates.slice(0,aoe?limit:1);for(const target of targets){const before=target.h,damage=hitEnemy(target,raw*(u.buff?1.2:1),u);S.activity[u.type].damage+=damage;if(before>0&&target.h<=0)S.kills[u.type]++;if(u.type==='toyHammer'&&damage>0)target.stunUntil=S.time+1;}if(!S.bossStage&&enemyBaseX()>=u.x&&enemyBaseX()-u.x<=range+8){const damage=Math.min(S.eh,raw*(u.buff?1.2:1));S.eh-=damage;S.activity[u.type].castle+=damage;}sfx('sword');}
@@ -960,11 +979,66 @@ redeemRareTickets();unlockAdvanced();if(S){for(const key of Object.keys(NEW_UNIT
   function beginBossIntro(type,name,text){if(type==='isaac'){const u=S.enemies.find(e=>e.type==='isaac'&&e.h>0);if(u)u.wakeAt=S.time+3;S.isaacSpeech={type,name,text,until:S.time+3,speechUntil:S.time+3};return;}S.bossIntroVersion=48;S.bossIntro={type,name,text,start:S.time,speechUntil:S.time+3,until:S.time+(type==='isaac'?3:6)};for(const u of [...S.units,...S.enemies]){u.stationary=true;u.attack=0;delete u._motion;}}
   function drawBossIntro(){const d=S.isaacSpeech&&S.time<S.isaacSpeech.until?S.isaacSpeech:S.bossIntro;if(!d||S.time>=d.until)return;const u=S.enemies.find(e=>e.type===d.type&&e.h>0);if(!u)return;const width=360,x=Math.max(12,Math.min(788-width,(u.x-(S.cameraX||0))-width/2)),y=104;ctx.save();ctx.fillStyle='#fff2d9';ctx.strokeStyle='#886239';ctx.lineWidth=2;ctx.fillRect(x,y,width,64);ctx.strokeRect(x,y,width,64);ctx.beginPath();ctx.moveTo(Math.min(x+width-12,Math.max(x+12,(u.x-(S.cameraX||0))))-7,y+64);ctx.lineTo((u.x-(S.cameraX||0)),y+80);ctx.lineTo(Math.min(x+width-12,Math.max(x+12,(u.x-(S.cameraX||0))))+7,y+64);ctx.fill();ctx.fillStyle='#30251d';ctx.textAlign='center';ctx.font='bold 14px system-ui';ctx.fillText(d.name,x+width/2,y+21);ctx.font='13px system-ui';ctx.fillText(S.time<d.speechUntil?d.text:'전투 시작까지 '+Math.ceil(d.until-S.time),x+width/2,y+46);ctx.restore();}
 
-  function worldWidth(){return stageNo===40||stageNo===50?1600:800;}
+  function cameraReady(){return S?.desert?S.desert.phase==='fight':S.time>=(stageNo===50?4.2:16.2);}
+  const DESERT_STATS={sphinx:{hp:22500,d:200,a:1.2,r:50,v:20,def:30},anubis:{hp:11500,d:800,a:2,r:200,v:30,def:10},pharaoh:{hp:20000,d:20,a:1.5,r:200,v:15,def:0},pyramid:{hp:20000,d:0,a:999,r:0,v:0,def:0}};
+  const SPHINX_QUIZZES=[
+    {question:'나의 머릿속에 지금 떠오른 숫자는 무엇이냐?',answers:['1','2','3','4'],reply:'틀렸다. 내 생각을 읽을 수는 없겠지.'},
+    {question:'이 네 개의 문 중 살아서 나갈 수 있는 문은 어느 것이냐?',answers:['첫 번째 문','두 번째 문','세 번째 문','네 번째 문'],reply:'어리석군. 네가 고른 문은 방금 함정으로 바뀌었다.'},
+    {question:'내가 이 문제를 내기 전에 가장 마지막으로 생각한 것은 무엇이냐?',answers:['피라미드','황금','태양','너의 죽음'],reply:'내 생각조차 읽지 못하면서 이곳을 지나가려 했느냐?'}
+  ];
+  function desertName(){return stageNo===60?'스핑크스':stageNo===70?'아누비스':'파라오';}
+  function makeDesert(type,x){const b=DESERT_STATS[type];return {type,x,y:GROUND,h:b.hp,m:b.hp,d:b.d,a:b.a,r:b.r,v:b.v,def:b.def,cd:0,anim:0,attack:0,stationary:true};}
+  function initDesert(n){q('#sphinxQuiz').classList.add('hidden');if(![60,70,80].includes(n))return;
+    S.bossStage=true;S.spawn=999999;S.cameraX=800;S.enemies=[];S.desert={phase:n===60?'quiz':n===70?'speech':'procession',start:S.time};
+    if(n===60){S.enemies=[makeDesert('sphinx',1380)];S.desert.quiz=Math.floor(Math.random()*3);renderSphinxQuiz();}
+    if(n===70){S.enemies=[makeDesert('anubis',1380)];S.desert.text='너희들의 여정은 이곳이 끝이다.';}
+    if(n===80){S.enemies=[makeDesert('pyramid',1500),makeDesert('pharaoh',1500)];S.desert.procession='out';}
+    S.eh=S.em=S.enemies.reduce((n,u)=>n+u.m,0);
+  }
+  function renderSphinxQuiz(){const d=S?.desert;if(!d||d.phase!=='quiz')return;const quiz=SPHINX_QUIZZES[d.quiz];q('#sphinxQuiz').classList.remove('hidden');q('#sphinxQuestion').textContent=quiz.question;q('#sphinxDoors').src=window.GAME_ASSETS.sheets.sphinxDoors;q('#sphinxDoors').style.display=d.quiz===1?'block':'none';for(let i=0;i<4;i++)q('#sphinxAnswer'+i).textContent=['① ','② ','③ ','④ '][i]+quiz.answers[i];q('#sphinxTimer').textContent='남은 시간 '+Math.max(0,Math.ceil(8-(S.time-d.start)))+'초';}
+  function answerSphinx(){if(S?.desert?.phase!=='quiz')return;S.desert.text=SPHINX_QUIZZES[S.desert.quiz].reply;S.desert.replyUntil=S.time+4;S.desert.phase='pan';S.desert.start=S.time;q('#sphinxQuiz').classList.add('hidden');}
+  function desertIntroTick(dt){const d=S.desert;if(!d)return false;
+    if(d.phase==='quiz'){renderSphinxQuiz();if(S.time-d.start>=8)answerSphinx();return true;}
+    if(d.phase==='speech'){if(S.time-d.start>=3){d.phase='pan';d.start=S.time;}return true;}
+    if(d.phase==='procession'){const p=S.enemies.find(u=>u.type==='pharaoh');p.stationary=false;p.v=50;const to=d.procession==='out'?1100:1500;p.x+=Math.sign(to-p.x)*Math.min(Math.abs(to-p.x),50*dt);
+      if(p.x===to){if(d.procession==='out'){S.enemies.push(makeDesert('sphinx',990),makeDesert('anubis',1210));d.procession='back';}else{S.enemies=S.enemies.filter(u=>u!==p);d.phase='pan';d.start=S.time;for(const u of S.enemies)if(u.type!=='pyramid')u.desertWake=S.time+1.2+20;S.em=S.enemies.reduce((n,u)=>n+u.m,0);}}return true;}
+    if(d.phase==='pan'){const t=Math.min(1,(S.time-d.start)/1.2);setCamera(800*(1-t*t*(3-2*t)));if(t>=1)d.phase='fight';return true;}
+    if(d.phase==='death'){if(S.time-d.deathAt>=3)clearStage(true);return true;}
+    return false;
+  }
+  function desertSplash(x,radius,damage){for(const u of [...S.units,...S.workers])if(u.h>0&&Math.abs(u.x-x)<=radius)hurtSkeleton(u,damage);if(Math.abs(232-x)<=radius)S.ph=Math.max(0,S.ph-damage);}
+  function desertDamage(x,radius,damage,side,ownerType){if(side!=='player'){desertSplash(x,radius,damage);return;}for(const e of S.enemies)if(e.h>0&&Math.abs(e.x-x)<=radius){const dealt=hitEnemy(e,damage);if(S.activity[ownerType])S.activity[ownerType].damage+=dealt;if(e.h<=0&&S.kills[ownerType]!==undefined)S.kills[ownerType]++;}if(!S.bossStage&&Math.abs(enemyBaseX()-x)<=radius)S.eh=Math.max(0,S.eh-damage);}
+  function desertCombat(u,dt,side='enemy'){const key=RARE[u.type]?.source||u.type,ally=side==='player';if(!DESERT_STATS[key])return false;u.stationary=true;if(u.h<=0||(!ally&&S.desert?.phase!=='fight')||S.time<(u.desertWake||0)||S.time<(u.stunUntil||0)||S.time<(u.invincibleUntil||0)||u.coffinUntil||key==='pyramid')return true;
+    u.attack=Math.max(0,(u.attack||0)-dt);u.cd=Math.max(0,u.cd-dt*(u.buff?1.2:1));u.anim=(u.anim||0)+dt;
+    const foes=ally?S.enemies:S.units,[target,dist]=nearest(u,foes),base=ally?enemyBaseX():232,dir=ally?1:-1,castle=(!ally||!S.bossStage)&&Math.abs(u.x-base)<=u.r,reach=key==='pharaoh'?200:u.r,damage=u.d*(u.buff?1.2:1);
+    if((target&&dist<=reach)||castle){if(u.cd>0)return true;u.cd=u.a;u.attack=u.a;
+      if(key==='sphinx')desertDamage(target?target.x:base,100,damage,side,u.type);
+      if(key==='anubis'){const to=target?target.x:base;S.effects.push({kind:'desertSoul',side,ownerType:u.type,x:u.x+dir*20,from:u.x+dir*20,to,life:8,damage});}
+      if(key==='pharaoh'){const roll=Math.random();u.attack2=false;if(roll<.2){S.effects.push({kind:'raSun',side,ownerType:u.type,damage,x:target?target.x:base,life:3.05,age:0,ticks:0});}else if(roll<.5){u.attack2=true;for(const v of foes)if(v.h>0&&Math.abs(v.x-u.x)<=80){v.curseBase??={d:v.d,v:v.v};v.curseUntil=S.time+3;v.curseNext=S.time+1;v.curseTicks=0;}S.effects.push({kind:'pharaohCurse',x:u.x+dir*40,life:.65});}else u.attack=0;}
+    }else if(u.attack<=0){u.stationary=false;u.x+=dir*u.v*(u.buff?1.2:1)*dt;clampUnit(u);}return true;
+  }
+  function updateDesertEffects(dt){updatePyramidReinforcements(dt);for(const u of S.units)if(u.coffinUntil&&S.time>=u.coffinUntil){u.h=u.m;delete u.coffinUntil;u.invincibleUntil=S.time+1;}
+    for(const u of [...S.units,...S.enemies]){if(u.curseUntil){const ally=S.units.includes(u),b=ally?unitStats(u):(u.curseBase||{d:u.d,v:u.v});u.d=b.d*(u.potion==='red'?1.5:1);u.v=b.v*(u.potion==='blue'?1.3:1);while((u.curseTicks||0)<3&&S.time>=u.curseNext){if(ally)hurtSkeleton(u,u.m*.1+(u.def||0));else hitEnemy(u,u.m*.1+(u.def||0));u.curseTicks=(u.curseTicks||0)+1;u.curseNext+=1;}if(S.time<u.curseUntil){u.d*=.5;u.v*=.5;}else{delete u.curseUntil;delete u.curseNext;delete u.curseTicks;delete u.curseBase;}}}
+    for(const e of S.effects){if(e.kind==='desertSoul'&&e.life>0){e.x+=Math.sign(e.to-e.x)*Math.min(Math.abs(e.x-e.to),260*dt);if(Math.abs(e.x-e.to)<.01){desertDamage(e.to,100,e.damage,e.side,e.ownerType);e.life=0;S.effects.push({kind:'pharaohCurse',x:e.to,life:.5});}}if(e.kind==='raSun'){e.age+=dt;const ticks=Math.min(15,Math.floor((e.age+1e-8)/.2));while(e.ticks<ticks){e.ticks++;desertDamage(e.x,100,e.damage??20,e.side,e.ownerType);}}}
+    const d=S.desert;if(d?.coffinAt&&S.time>=d.coffinAt){const p=S.enemies.find(u=>u.type==='pharaoh');d.coffinAt=0;if(p){p.h=p.m;delete p.coffinUntil;p.invincibleUntil=S.time+1;}}
+  }
+  function updatePyramidReinforcements(dt){if(stageNo!==80||S.desert?.phase!=='fight')return;const pyramid=S.enemies.find(e=>e.type==='pyramid'&&e.h>0);if(!pyramid||S.enemies.some(e=>['sphinx','anubis'].includes(e.type)&&e.h>0)){delete S.desert.reinforcementClock;return;}S.desert.reinforcementClock??=4;S.desert.reinforcementClock-=dt;while(S.desert.reinforcementClock<=0){S.desert.reinforcementClock+=4;const b=enemyStats('egyptian');S.enemies.push({type:'egyptian',x:pyramid.x-30,y:GROUND,h:b.hp,m:b.hp,...b,cd:0,attack:0,anim:0});}}
+  function desertDeaths(){const d=S.desert;if(!d)return;
+    for(const u of [...S.enemies]){if(u.h>0||u.desertDeathHandled)continue;u.desertDeathHandled=true;
+      if(u.type==='pyramid'){desertSplash(u.x,1000,888);const p=makeDesert('pharaoh',u.x);p.invincibleUntil=S.time+1;p.desertWake=S.time+1;S.enemies.push(p);S.em+=p.m;}
+      if(u.type==='pharaoh'&&Math.random()<.7){u.h=1;u.coffinUntil=S.time+2;d.coffinAt=u.coffinUntil;u.invincibleUntil=u.coffinUntil;u.desertDeathHandled=false;}
+      if((stageNo===60&&u.type==='sphinx')||(stageNo===70&&u.type==='anubis')){d.phase='death';d.deathAt=S.time;d.text=u.type==='sphinx'?'파라오님..':'내가 경고했거늘..';d.speakerX=u.x;setCamera(u.x-400);}
+    }
+  }
+  function drawDesertEffect(e){if(!['desertSoul','raSun','pharaohCurse'].includes(e.kind))return false;ctx.save();if(e.kind==='desertSoul'){if(FRAMES.soul)ctx.drawImage(FRAMES.soul,e.x-42,GROUND-90,84,64);}else if(e.kind==='raSun'){ctx.fillStyle='rgba(255,215,70,.30)';ctx.fillRect(e.x-100,GROUND-200,200,200);ctx.fillStyle='#fff5b8';ctx.fillRect(e.x-8,GROUND-180,16,180);if(FRAMES.raEye)ctx.drawImage(FRAMES.raEye,e.x-40,GROUND-240,80,60);}else{if(FRAMES.curse)ctx.drawImage(FRAMES.curse,e.x-80,GROUND-80,160,80);}ctx.restore();return true;}
+  function drawDesertOverlay(){const d=S.desert;if(!d)return;const speech=d.phase==='speech'||d.phase==='death'||S.time<(d.replyUntil||0);if(speech&&d.text){ctx.save();const x=d.phase==='death'?Math.max(170,Math.min(630,d.speakerX-S.cameraX)):400;ctx.fillStyle='#fff1d6';ctx.strokeStyle='#9c753c';ctx.fillRect(x-195,80,390,65);ctx.strokeRect(x-195,80,390,65);ctx.beginPath();ctx.moveTo(x-8,145);ctx.lineTo(x,158);ctx.lineTo(x+8,145);ctx.fill();ctx.fillStyle='#392715';ctx.textAlign='center';ctx.font='bold 12px system-ui';ctx.fillText(d.text,x,115,375);ctx.restore();}}
+  for(let i=0;i<4;i++)q('#sphinxAnswer'+i).addEventListener('click',answerSphinx);
+
+  function worldWidth(){return [40,50,60,70,80].includes(stageNo)?1600:800;}
   function enemyBaseX(){return worldWidth()-100;}
   function worldRight(){return worldWidth()-22;}
   function setCamera(x){if(S)S.cameraX=Math.max(0,Math.min(worldWidth()-800,x));}
-  function mercenaryCamera(){if(stageNo!==40&&stageNo!==50)return;const start=stageNo===50?3:15;if(S.time<start)setCamera(800);else if(S.time<start+1.2){const p=(S.time-start)/1.2;setCamera(800*(1-p*p*(3-2*p)));}else if(!S.introCameraDone){setCamera(0);S.introCameraDone=true;}}
+  function mercenaryCamera(){if(S.desert||worldWidth()===800)return;const start=stageNo===50?3:15;if(S.time<start)setCamera(800);else if(S.time<start+1.2){const p=(S.time-start)/1.2;setCamera(800*(1-p*p*(3-2*p)));}else if(!S.introCameraDone){setCamera(0);S.introCameraDone=true;}}
   function mercenaryTick(u,side,dt){const key=RARE[u.type]?.source||u.type;if(!MERCENARIES[key])return false;
     if(side==='enemy'&&stageNo===40&&S.time<15){u.stationary=true;u.attack=0;return true;}
     u.anim=(u.anim||0)+dt;u.attack=Math.max(0,(u.attack||0)-dt);u.cd=Math.max(0,(u.cd||0)-dt*(u.buff?1.2:1));
@@ -990,10 +1064,10 @@ redeemRareTickets();unlockAdvanced();if(S){for(const key of Object.keys(NEW_UNIT
     ctx.fillStyle='#111925c9';ctx.fillRect(S.cameraX+270,328,260,20);ctx.fillStyle='#eed9a6';ctx.font='11px system-ui';ctx.textAlign='center';ctx.fillText(S.time<16.2?'용병단과의 결전':'◀ 화면을 좌우로 밀어 전장 이동 ▶',S.cameraX+400,342);
   }
   function installBattleViewport(){let drag=null;canvas.style.touchAction='none';
-    canvas.addEventListener('pointerdown',e=>{if(!S||(stageNo!==40&&stageNo!==50)||S.time<(stageNo===50?4.2:16.2)||S.over)return;drag={id:e.pointerId,x:e.clientX,camera:S.cameraX||0};canvas.setPointerCapture?.(e.pointerId);e.preventDefault();});
+    canvas.addEventListener('pointerdown',e=>{if(!S||(worldWidth()===800)||!cameraReady()||S.over)return;drag={id:e.pointerId,x:e.clientX,camera:S.cameraX||0};canvas.setPointerCapture?.(e.pointerId);e.preventDefault();});
     canvas.addEventListener('pointermove',e=>{if(!drag||drag.id!==e.pointerId)return;setCamera(drag.camera-(e.clientX-drag.x)*800/Math.min(canvas.getBoundingClientRect().width,canvas.getBoundingClientRect().height*800/350));e.preventDefault();});
     for(const event of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(event,()=>{drag=null;});
-    q('#cameraLeft').addEventListener('click',()=>{if(S&&S.time>=(stageNo===50?4.2:16.2))setCamera((S.cameraX||0)-400);});q('#cameraRight').addEventListener('click',()=>{if(S&&S.time>=(stageNo===50?4.2:16.2))setCamera((S.cameraX||0)+400);});
+    q('#cameraLeft').addEventListener('click',()=>{if(S&&cameraReady())setCamera((S.cameraX||0)-400);});q('#cameraRight').addEventListener('click',()=>{if(S&&cameraReady())setCamera((S.cameraX||0)+400);});
     q('#fullscreenBtn').addEventListener('click',async()=>{if(document.fullscreenElement){await document.exitFullscreen?.();return;}if(root.classList.contains('viewportFullscreen')){root.classList.remove('viewportFullscreen');return;}try{if(root.requestFullscreen)await root.requestFullscreen();else root.classList.add('viewportFullscreen');}catch{root.classList.add('viewportFullscreen');}});
   }
   installBattleViewport();
