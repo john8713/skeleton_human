@@ -203,7 +203,7 @@ Object.assign(NEW_UNITS,{"greatWarrior": {"name": "스켈레톤대전사", "tier
     else if(u.attack>0||u.phase==='work'){state=(u.attack2&&f.attack2)?'attack2':type==='seline'&&u.castKind==='earth'?'cast':'attack';oneShot=u.phase!=='work';duration=type==='pirate'?.7:type==='healer'?.8:Math.max(.2,u.a||.8);}
     else if(moved){state=u.carry&&f.carry?'carry':'walk';duration=Math.max(.42,Math.min(1.05,34/Math.max(15,u.v||25)));}
     if(u.type==='laserKai'&&u.death===undefined){if(u.beamRemaining>0){state='attack';oneShot=false;}else if(u.charge>0){state='charge';oneShot=false;}}if((u.type==='robin'||u.type==='fallenRobin')&&u.death===undefined){if(u.jumpAge!==undefined)state='jump';else if(u.retreatTo!==undefined)state='retreat';}
-    const frozen=(S.desert&&['quiz','speech','pan','death'].includes(S.desert.phase))||S.time<(u.desertWake||0)||bossIntroActive()||(u.type==='isaac'&&now<(u.wakeAt||0));if(frozen){state='idle';oneShot=false;}
+    const frozen=(S.desert&&['reveal','quiz','speech','pan','death'].includes(S.desert.phase))||S.time<(u.desertWake||0)||bossIntroActive()||(u.type==='isaac'&&now<(u.wakeAt||0));if(frozen){state='idle';oneShot=false;}
     frames=f[state]||f.idle||f.walk;if(!frames?.length)return;
     const reset=!previous||previous.state!==state||(oneShot&&(u.attack||0)>(previous.attack||0)+.025)||now<previous.at;
     const start=reset?now:previous.start,elapsed=u.death!==undefined?u.death:Math.max(0,now-start);
@@ -995,7 +995,7 @@ redeemRareTickets();unlockAdvanced();if(S){for(const key of Object.keys(NEW_UNIT
   function desertName(){return stageNo===60?'스핑크스':stageNo===70?'아누비스':'파라오';}
   function makeDesert(type,x){const b=DESERT_STATS[type];return {type,x,y:GROUND,h:b.hp,m:b.hp,d:b.d,a:b.a,r:b.r,v:b.v,def:b.def,cd:0,anim:0,attack:0,stationary:true};}
   function initDesert(n){q('#sphinxQuiz').classList.add('hidden');if(![60,70,80].includes(n))return;
-    S.bossStage=true;S.spawn=999999;S.cameraX=800;S.enemies=[];S.desert={phase:n===60?'quiz':n===70?'speech':'procession',start:S.time};
+    S.bossStage=true;S.spawn=999999;S.cameraX=800;S.enemies=[];S.desert={phase:n===60?'reveal':n===70?'speech':'procession',start:S.time};
     if(n===60){S.enemies=[makeDesert('sphinx',1380)];S.desert.quiz=Math.floor(Math.random()*3);renderSphinxQuiz();}
     if(n===70){S.enemies=[makeDesert('anubis',1380)];S.desert.text='너희들의 여정은 이곳이 끝이다.';}
     if(n===80){S.enemies=[makeDesert('pyramid',1500),makeDesert('pharaoh',1500)];S.desert.procession='out';}
@@ -1004,6 +1004,7 @@ redeemRareTickets();unlockAdvanced();if(S){for(const key of Object.keys(NEW_UNIT
   function renderSphinxQuiz(){const d=S?.desert;if(!d||d.phase!=='quiz')return;const quiz=SPHINX_QUIZZES[d.quiz];q('#sphinxQuiz').classList.remove('hidden');q('#sphinxQuestion').textContent=quiz.question;q('#sphinxDoors').src=window.GAME_ASSETS.sheets.sphinxDoors;q('#sphinxDoors').style.display=d.quiz===1?'block':'none';for(let i=0;i<4;i++)q('#sphinxAnswer'+i).textContent=['① ','② ','③ ','④ '][i]+quiz.answers[i];q('#sphinxTimer').textContent='남은 시간 '+Math.max(0,Math.ceil(8-(S.time-d.start)))+'초';}
   function answerSphinx(){if(S?.desert?.phase!=='quiz')return;S.desert.text=SPHINX_QUIZZES[S.desert.quiz].reply;S.desert.replyUntil=S.time+3;S.desert.phase='speech';S.desert.start=S.time;q('#sphinxQuiz').classList.add('hidden');}
   function desertIntroTick(dt){const d=S.desert;if(!d)return false;
+    if(d.phase==='reveal'){if(S.time-d.start>=1){d.phase='quiz';d.start=S.time;renderSphinxQuiz();}return true;}
     if(d.phase==='quiz'){renderSphinxQuiz();if(S.time-d.start>=8)answerSphinx();return true;}
     if(d.phase==='speech'){if(S.time-d.start>=3){d.phase='pan';d.start=S.time;}return true;}
     if(d.phase==='procession'){const p=S.enemies.find(u=>u.type==='pharaoh');p.stationary=false;p.v=50;const to=d.procession==='out'?1100:1500;p.x+=Math.sign(to-p.x)*Math.min(Math.abs(to-p.x),50*dt);
