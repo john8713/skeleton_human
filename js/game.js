@@ -45,7 +45,7 @@ Object.assign(NEW_UNITS,{"greatWarrior": {"name": "스켈레톤대전사", "tier
   for(const [key,b] of Object.entries(MERCENARIES))Object.assign(RARE['fallen_'+key],{hp:b.hp/2,d:b.d,a:b.a,r:b.r});
   Object.assign(RARE.goblin,{hp:200,def:5});Object.assign(NEW_UNITS.observer,{hp:170,v:60});
   Object.assign(RARE,{
-    fallenSphinx:{name:'타락한 스핑크스',source:'sphinx',tier:'legendary',hp:11250,d:200,a:1.2,r:50,v:20,def:30,cost:[1500,1000],description:'스핑크스의 광역 공격을 사용합니다.'},
+    fallenSphinx:{name:'타락한 스핑크스',source:'sphinx',tier:'legendary',hp:6750,d:200,a:1.2,r:50,v:20,def:30,cost:[1500,1000],description:'스핑크스의 광역 공격을 사용합니다.'},
     fallenAnubis:{name:'타락한 아누비스',source:'anubis',tier:'legendary',hp:5750,d:800,a:2,r:200,v:30,def:10,cost:[1200,900],description:'영혼탄으로 범위 100에 피해를 줍니다.'},
     fallenPharaoh:{name:'타락한 파라오',source:'pharaoh',tier:'ex',hp:10000,d:20,a:1.5,r:200,v:15,def:0,cost:[1800,1400],description:'라의 눈과 저주를 사용하며 사망 시 60% 확률로 부활합니다.'}
   });
@@ -97,7 +97,12 @@ Object.assign(NEW_UNITS,{"greatWarrior": {"name": "스켈레톤대전사", "tier
       const im=key==='pharaoh'?source:prepareSheet(source,true,false,'shane');im.hires=true;
       const frame=(x,y,w,h,feet=h-5)=>cut(im,x,y,w,h,feet);
       const seq=(xs,y,h)=>xs.slice(0,-1).map((x,i)=>frame(x,y,xs[i+1]-x,h));
-      if(key==='sphinx')FRAMES[key]={idle:seq([25,240,450,660,875,1090,1300,1536],0,185),walk:seq([0,195,390,585,780,975,1170,1365,1536],205,160),attack:seq([0,195,390,585,780,975,1170,1365,1536],385,160),death:seq([0,205,415,625,835,1045,1255,1536],700,120)};
+      if(key==='sphinx'){
+        // Anchor each pose to the torso and ground, not the varying cell width.
+        const anchored=(edges,pivots,y,h,feet)=>edges.slice(0,-1).map((x,i)=>{const w=edges[i+1]-x,f=cut(im,x,y,w,h,feet),out=document.createElement('canvas');out.width=f.width;out.height=f.height;out.getContext('2d').drawImage(f,(x+w/2-pivots[i])*UNIT_SCALE*3,0);return out;});
+        const edges=[0,195,390,585,780,975,1170,1365,1536],pivots=[130,320,510,700,890,1080,1270,1460];
+        FRAMES[key]={idle:anchored([25,240,450,660,875,1090,1300,1536],[150,365,575,790,1000,1210,1425],0,185,177),walk:anchored(edges,pivots,205,160,151),attack:anchored(edges,pivots,385,160,151),death:anchored([0,205,415,625,835,1045,1255,1536],[130,335,545,755,965,1175,1385],700,120,110)};
+      }
       if(key==='anubis'){FRAMES[key]={idle:seq([395,555,715,875,1035,1195,1355,1536],0,175),walk:seq([390,550,710,870,1030,1190,1350,1536],185,150),attack:seq([390,550,710,870,1065],340,160),death:seq([390,570,750,930,1130,1330,1536],655,145)};FRAMES.soul=frame(385,840,130,90);}
       if(key==='pharaoh'){FRAMES[key]={idle:seq([400,550,700,850,1000,1150,1300,1500],0,145),walk:seq([400,550,700,850,1000,1150,1300,1450,1580],150,145),attack:seq([405,550,700,910,1120,1330,1530,1740],300,145),attack2:seq([405,565,735,910,1090,1270,1460,1760],450,150),death:seq([405,550,690,830,970,1100,1240,1380,1550,1710],615,125)};FRAMES.raEye=cut(source,120,775,80,60,0,true);FRAMES.curse=cut(source,925,775,110,85,0,true);}
       resolve();return;
@@ -207,7 +212,7 @@ Object.assign(NEW_UNITS,{"greatWarrior": {"name": "스켈레톤대전사", "tier
     if(oneShot)idx=Math.min(frames.length-1,Math.floor(phase*frames.length));
     else if(state==='walk'||state==='carry'){const distance=(previous?.distance||0)+(previous?Math.abs(u.x-previous.x):0);phase=distance/Math.max(18,(u.v||25)*.72);idx=Math.floor(phase*frames.length)%frames.length;}
     else idx=Math.floor(phase*frames.length)%frames.length;
-    if(type==='toyHammer'&&state==='attack'){phase=Math.max(0,1-(u.attack||0)/u.a);idx=Math.min(frames.length-1,Math.floor(phase*frames.length));}if(state==='charge')idx=Math.min(frames.length-1,Math.floor((u.charge||0)/8*frames.length));if(state==='jump')idx=Math.min(frames.length-1,Math.floor((u.jumpAge||0)/.5*frames.length));if(frozen)idx=0;
+    if((type==='toyHammer'||type==='sphinx')&&state==='attack'){phase=Math.max(0,1-(u.attack||0)/u.a);idx=Math.min(frames.length-1,Math.floor(phase*frames.length));}if(state==='charge')idx=Math.min(frames.length-1,Math.floor((u.charge||0)/8*frames.length));if(state==='jump')idx=Math.min(frames.length-1,Math.floor((u.jumpAge||0)/.5*frames.length));if(frozen)idx=0;
     u._motion={state,start,at:now,x:u.x,attack:u.attack||0,distance:(previous?.distance||0)+(previous?Math.abs(u.x-previous.x):0)};
     ctx.save();if(u.potion&&!(u.potion==='gold'&&S.time>=(u.invincibleUntil||0))){ctx.filter=u.potion==='red'?'sepia(1) saturate(5) hue-rotate(315deg)':u.potion==='blue'?'sepia(1) saturate(5) hue-rotate(160deg)':'sepia(1) saturate(4) hue-rotate(5deg)';}if(isHidden(u)&&!((u.revealedUntil||0)>S.time))ctx.globalAlpha=.32;ctx.translate(u.x,GROUND-(type==='balloon'?118:type==='observer'?78:0)-(u.jumpAge!==undefined?Math.sin(Math.min(1,u.jumpAge/.5)*Math.PI)*40:0));if(type==='observer'&&u.facing===-1||type==='scout'&&u.facing===1)ctx.scale(-1,1);if(RARE[type]){const z=type==='boneDragon'?3.06:type==='cat'?1.4:type==='darkKnight'?1.755:type==='hero'||type==='ailey'?1.56:1.3;ctx.scale(z,z);}if(type==='assassin'&&u.facing===-1)ctx.scale(-1,1);if(type==='banner')ctx.scale(1.5,1.5);if(type==='knight')ctx.scale(u.type==='cavalry'||originalType==='fallen_cavalry'?.48:.5,u.type==='cavalry'||originalType==='fallen_cavalry'?.48:.5);if(type==='scout')ctx.scale(.85,.85);if(type==='balloon')ctx.scale(1.7,1.7);if(type==='invisibleSkeleton')ctx.scale(1.3,1.3);if(originalType==='knight'&&u.type==='knight'&&stageNo===10)ctx.scale(1.25,1.25);if(type==='heavy')ctx.scale(1.2,1.2);if(type==='seline'){ctx.translate(0,-8+(bossIntroActive()?0:Math.sin((S?.time||0)*3)*2));ctx.scale(1.7122,1.7122);}if(type==='darkAssault')ctx.scale(1.4,1.4);if(type==='pirate')ctx.scale(1.45,1.45);if(type==='isaac')ctx.scale(1.6,1.6);if(type==='phil'||type==='phil2')ctx.scale(2.08,2.08);if(originalType==='fallenSeline')ctx.scale(.85,.85);if(SPRITE_SIZE[type])ctx.scale(SPRITE_SIZE[type],SPRITE_SIZE[type]);if(flip)ctx.scale(-1,1);
     if(u.potion&&u.death===undefined&&!(u.potion==='gold'&&S.time>=(u.invincibleUntil||0))){ctx.save();ctx.filter='none';ctx.strokeStyle=u.potion==='red'?'#ff4242':u.potion==='blue'?'#45baff':'#ffdc43';ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(0,-4,19,6,0,0,Math.PI*2);ctx.stroke();ctx.fillStyle=ctx.strokeStyle;ctx.font='bold 10px sans-serif';ctx.textAlign='center';ctx.restore();}
@@ -218,7 +223,7 @@ Object.assign(NEW_UNITS,{"greatWarrior": {"name": "스켈레톤대전사", "tier
     if(type!=='observer'&&type!=='balloon')ctx.translate(0,-Math.abs(stride)*.3-breath);
     ctx.drawImage(frames[Math.max(0,idx)],type==='knight'?-240:-FRAME_X,type==='knight'?-280:-FRAME_FEET,type==='knight'?480:FRAME_W,type==='knight'?300:FRAME_H);ctx.restore();
   }
-  const SPRITE_SIZE={sphinx:2.3,anubis:2.3,pharaoh:2.5};
+  const SPRITE_SIZE={egyptian:1.15,sphinx:2.3,anubis:2.3,pharaoh:2.5};
   function frameHeight(f){const g=f.getContext('2d'),d=g.getImageData(0,0,f.width,f.height).data;let top=f.height,bottom=0;for(let y=0;y<f.height;y++)for(let x=0;x<f.width;x++)if(d[(y*f.width+x)*4+3]>200){top=Math.min(top,y);bottom=Math.max(bottom,y);}return Math.max(1,bottom-top)*128/f.height;}
   ready.then(async()=>{if(typeof mainArt.decode==='function')await mainArt.decode();q('#loadingScreen').classList.add('hidden');q('#mainScreen').style.visibility='visible';for(const [key,base,scale] of [['shieldKnight','heavyShield',1.15],['axeKnight','heavyShield',1.15],['captain','pirate',1.45]]){const f=FRAMES[key],b=FRAMES[base];SPRITE_SIZE[key]=frameHeight((b.idle||b.walk)[0])*scale/frameHeight((f.idle||f.walk)[0]);}for(const [key,d] of Object.entries({...RARE,...NEW_UNITS}))if(d.source)FRAMES[key]=FRAMES[enemySprite(d.source)];for(const [id,type] of [['woodWorkerIcon','wood'],['coalWorkerIcon','coal'],['soldierIcon','soldier'],['archerIcon','archer'],['shieldIcon','shield'],['assaultIcon','assault']])q('#'+id).src=FRAMES[type].walk[0].toDataURL();q('#gameStart').disabled=false;q('#continueBtn').disabled=!S;q('#gameStart').textContent='▶ 게임 시작';}).catch(e=>{console.error(e);q('#loadingScreen').textContent='이미지를 불러오지 못했습니다. 새로고침해 주세요.';q('#gameStart').textContent='이미지 로딩 실패 · 새로고침해 주세요';});
   q('#gameStart').disabled=true;q('#gameStart').textContent='이미지 준비 중…';
@@ -739,6 +744,7 @@ Object.assign(UNIT_NAMES,Object.fromEntries(Object.entries(RARE).map(([k,v])=>[k
     q('#buyShield').disabled=S.over||S.pause||!profile.shieldUnlocked||!afford(tank)||S.build[tank]>0||pop()>=S.cap;
   }
   function migrate(version){
+    for(const u of [...S.units,...S.enemies]){const max=u.type==='sphinx'?13500:u.type==='fallenSphinx'?6750:0;if(max&&u.m!==max){u.h=max*Math.max(0,u.h/u.m);u.m=max;}}if(S.desert){S.eh=S.enemies.reduce((sum,u)=>sum+(['sphinx','anubis','pharaoh','pyramid'].includes(u.type)?Math.max(0,u.h):0),0);S.em=Math.max(S.eh,S.enemies.reduce((sum,u)=>sum+(['sphinx','anubis','pharaoh','pyramid'].includes(u.type)?u.m:0),0));}
     if(S.bossIntro?.type==='isaac'){const old=S.bossIntro;const u=S.enemies.find(e=>e.type==='isaac');if(u)u.wakeAt=old.speechUntil;S.isaacSpeech={...old,until:old.speechUntil};delete S.bossIntro;}
 
     if(stageNo===8&&!S.over&&!S.isaacIntroShown&&S.enemies.some(e=>e.type==='isaac'&&e.h>0)){S.isaacIntroShown=true;beginBossIntro('isaac','원정대 견습기사 아이작','다 베어주마!');}
@@ -980,7 +986,7 @@ redeemRareTickets();unlockAdvanced();if(S){for(const key of Object.keys(NEW_UNIT
   function drawBossIntro(){const d=S.isaacSpeech&&S.time<S.isaacSpeech.until?S.isaacSpeech:S.bossIntro;if(!d||S.time>=d.until)return;const u=S.enemies.find(e=>e.type===d.type&&e.h>0);if(!u)return;const width=360,x=Math.max(12,Math.min(788-width,(u.x-(S.cameraX||0))-width/2)),y=104;ctx.save();ctx.fillStyle='#fff2d9';ctx.strokeStyle='#886239';ctx.lineWidth=2;ctx.fillRect(x,y,width,64);ctx.strokeRect(x,y,width,64);ctx.beginPath();ctx.moveTo(Math.min(x+width-12,Math.max(x+12,(u.x-(S.cameraX||0))))-7,y+64);ctx.lineTo((u.x-(S.cameraX||0)),y+80);ctx.lineTo(Math.min(x+width-12,Math.max(x+12,(u.x-(S.cameraX||0))))+7,y+64);ctx.fill();ctx.fillStyle='#30251d';ctx.textAlign='center';ctx.font='bold 14px system-ui';ctx.fillText(d.name,x+width/2,y+21);ctx.font='13px system-ui';ctx.fillText(S.time<d.speechUntil?d.text:'전투 시작까지 '+Math.ceil(d.until-S.time),x+width/2,y+46);ctx.restore();}
 
   function cameraReady(){return S?.desert?S.desert.phase==='fight':S.time>=(stageNo===50?4.2:16.2);}
-  const DESERT_STATS={sphinx:{hp:22500,d:200,a:1.2,r:50,v:20,def:30},anubis:{hp:11500,d:800,a:2,r:200,v:30,def:10},pharaoh:{hp:20000,d:20,a:1.5,r:200,v:15,def:0},pyramid:{hp:20000,d:0,a:999,r:0,v:0,def:0}};
+  const DESERT_STATS={sphinx:{hp:13500,d:200,a:1.2,r:50,v:20,def:30},anubis:{hp:11500,d:800,a:2,r:200,v:30,def:10},pharaoh:{hp:20000,d:20,a:1.5,r:200,v:15,def:0},pyramid:{hp:20000,d:0,a:999,r:0,v:0,def:0}};
   const SPHINX_QUIZZES=[
     {question:'나의 머릿속에 지금 떠오른 숫자는 무엇이냐?',answers:['1','2','3','4'],reply:'틀렸다. 내 생각을 읽을 수는 없겠지.'},
     {question:'이 네 개의 문 중 살아서 나갈 수 있는 문은 어느 것이냐?',answers:['첫 번째 문','두 번째 문','세 번째 문','네 번째 문'],reply:'어리석군. 네가 고른 문은 방금 함정으로 바뀌었다.'},
