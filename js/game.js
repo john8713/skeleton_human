@@ -1077,6 +1077,22 @@ redeemRareTickets();unlockAdvanced();if(S){for(const key of Object.keys(NEW_UNIT
     q('#cameraLeft').addEventListener('click',()=>{if(S&&cameraReady())setCamera((S.cameraX||0)-400);});q('#cameraRight').addEventListener('click',()=>{if(S&&cameraReady())setCamera((S.cameraX||0)+400);});
     q('#fullscreenBtn').addEventListener('click',async()=>{if(document.fullscreenElement){await document.exitFullscreen?.();return;}if(root.classList.contains('viewportFullscreen')){root.classList.remove('viewportFullscreen');return;}try{if(root.requestFullscreen)await root.requestFullscreen();else root.classList.add('viewportFullscreen');}catch{root.classList.add('viewportFullscreen');}});
   }
+  for(const id of ['#sphinxQuiz','#chapterStory','#unlockModal'])q('#gameScreen').appendChild(q(id));
+  function fitGameViewport(){
+    const viewport=window.visualViewport,width=viewport?.width||window.innerWidth,height=viewport?.height||window.innerHeight;
+    if(!width||!height)return;
+    const css=window.getComputedStyle(root),inset=name=>parseFloat(css.getPropertyValue('--safe-'+name))||0;
+    const left=inset('left'),right=inset('right'),top=inset('top'),bottom=inset('bottom');
+    const screen=q('#gameScreen');
+    screen.style.setProperty('--game-scale',Math.min((width-left-right)/800,(height-top-bottom)/500));
+    screen.style.setProperty('--game-left',((viewport?.offsetLeft||0)+left+(width-left-right)/2)+'px');
+    screen.style.setProperty('--game-top',((viewport?.offsetTop||0)+top+(height-top-bottom)/2)+'px');
+  }
+  window.addEventListener('resize',fitGameViewport);
+  window.visualViewport?.addEventListener('resize',fitGameViewport);
+  window.visualViewport?.addEventListener('scroll',fitGameViewport);
+  document.addEventListener('fullscreenchange',fitGameViewport);
+  fitGameViewport();
   installBattleViewport();
 
   requestAnimationFrame(loop);
