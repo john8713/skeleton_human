@@ -281,3 +281,35 @@ html,body,#undead-game-v3,#undead-game-v3 button,#undead-game-v3 canvas,#undead-
 #undead-game-v3 #notice{flex:0 0 16px;min-height:0;margin:0;padding:1px 5px;line-height:14px}
 #undead-game-v3 .sphinxCard{max-height:460px}
 #undead-game-v3 #sphinxDoors{max-height:180px}
+
+/* Use the available screen for battle; keep summoning in a compact bottom strip. */
+#undead-game-v3 #gameScreen{width:var(--game-width,100vw);height:var(--game-height,100dvh)!important;padding:0;transform:translate(-50%,-50%);isolation:isolate}
+#undead-game-v3 #gameScreen>.row{flex-basis:28px;min-height:28px;padding:0 4px;margin:0!important}
+#undead-game-v3 #gameScreen>.row .btn{min-height:28px;font-size:11px;padding:2px 8px}
+#undead-game-v3 #stageTitle{font-size:14px!important}
+#undead-game-v3 #battleWrap{border:0;border-radius:0;min-height:0}
+#undead-game-v3 #battleCanvas{object-fit:fill;width:100%;height:0;min-height:0;flex:1}
+#undead-game-v3 #battleDock{flex:0 0 64px;height:64px;min-height:64px;padding:2px;gap:3px}
+#undead-game-v3 #battleDock .unitSlot>.shop{padding:1px!important;min-height:0!important;height:100%}
+#undead-game-v3 #battleDock .uniformContent{display:grid;grid-template-columns:30px minmax(0,1fr);grid-template-rows:18px 15px 13px;gap:1px 3px;padding:10px 2px 0;align-items:center}
+#undead-game-v3 #battleDock .uniformContent .spriteIcon{grid-row:1/3;grid-column:1;width:30px;height:33px}
+#undead-game-v3 #battleDock .uniformContent b{grid-column:2;min-height:0;font-size:9px;line-height:9px;max-height:18px;overflow:hidden}
+#undead-game-v3 #battleDock .uniformPrice{grid-column:2;min-height:0;font-size:9px;line-height:12px;white-space:nowrap}
+#undead-game-v3 #battleDock .uniformLevel{display:none}
+#undead-game-v3 #battleDock .uniformTrack{grid-column:1/-1;height:12px;min-height:12px}
+#undead-game-v3 #battleDock .uniformTime{font-size:9px;line-height:12px}
+#undead-game-v3 #battleDock .uniformCount{font-size:9px;line-height:10px}
+#undead-game-v3 #battleDock .moveUnit{height:16px;min-height:16px;width:24px}
+#undead-game-v3 #battleDock #potionTray{flex-basis:66px;max-width:66px;position:relative}
+#undead-game-v3 #battleDock .potionButtons{flex-direction:row;gap:1px}
+#undead-game-v3 #battleDock .potionButtons button{flex:1;min-width:0;min-height:42px;padding:1px;flex-direction:column;font-size:9px}
+#undead-game-v3 #battleDock .potionButtons img{width:17px;height:22px}
+#undead-game-v3 #potionStatus{position:absolute;bottom:0;left:0;font-size:8px}
+#undead-game-v3 #notice{flex:0 0 14px;line-height:12px;font-size:10px}
+#undead-game-v3 #gameScreen>.small{display:none}
+#undead-game-v3 #battleHud .stat{font-size:12px}
+#undead-game-v3 #battleHud .small{font-size:10px}
+#undead-game-v3 #sphinxQuiz,#undead-game-v3 #chapterStory,#undead-game-v3 #unlockModal{position:absolute}
+#undead-game-v3 .sphinxCard{max-height:90%;padding:12px}
+#undead-game-v3 #sphinxDoors{max-height:30dvh}
+@media(min-height:650px){#undead-game-v3 #battleDock{flex-basis:76px;height:76px;min-height:76px}#undead-game-v3 #battleDock .uniformContent{padding-top:15px}}

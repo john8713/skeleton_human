@@ -1072,7 +1072,7 @@ redeemRareTickets();unlockAdvanced();if(S){for(const key of Object.keys(NEW_UNIT
   }
   function installBattleViewport(){let drag=null;canvas.style.touchAction='none';
     canvas.addEventListener('pointerdown',e=>{if(!S||(worldWidth()===800)||!cameraReady()||S.over)return;drag={id:e.pointerId,x:e.clientX,camera:S.cameraX||0};canvas.setPointerCapture?.(e.pointerId);e.preventDefault();});
-    canvas.addEventListener('pointermove',e=>{if(!drag||drag.id!==e.pointerId)return;setCamera(drag.camera-(e.clientX-drag.x)*800/Math.min(canvas.getBoundingClientRect().width,canvas.getBoundingClientRect().height*800/350));e.preventDefault();});
+    canvas.addEventListener('pointermove',e=>{if(!drag||drag.id!==e.pointerId)return;setCamera(drag.camera-(e.clientX-drag.x)*800/canvas.getBoundingClientRect().width);e.preventDefault();});
     for(const event of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(event,()=>{drag=null;});
     q('#cameraLeft').addEventListener('click',()=>{if(S&&cameraReady())setCamera((S.cameraX||0)-400);});q('#cameraRight').addEventListener('click',()=>{if(S&&cameraReady())setCamera((S.cameraX||0)+400);});
     q('#fullscreenBtn').addEventListener('click',async()=>{if(document.fullscreenElement){await document.exitFullscreen?.();return;}if(root.classList.contains('viewportFullscreen')){root.classList.remove('viewportFullscreen');return;}try{if(root.requestFullscreen)await root.requestFullscreen();else root.classList.add('viewportFullscreen');}catch{root.classList.add('viewportFullscreen');}});
@@ -1084,7 +1084,8 @@ redeemRareTickets();unlockAdvanced();if(S){for(const key of Object.keys(NEW_UNIT
     const css=window.getComputedStyle(root),inset=name=>parseFloat(css.getPropertyValue('--safe-'+name))||0;
     const left=inset('left'),right=inset('right'),top=inset('top'),bottom=inset('bottom');
     const screen=q('#gameScreen');
-    screen.style.setProperty('--game-scale',Math.min((width-left-right)/800,(height-top-bottom)/500));
+    screen.style.setProperty('--game-width',(width-left-right)+'px');
+    screen.style.setProperty('--game-height',(height-top-bottom)+'px');
     screen.style.setProperty('--game-left',((viewport?.offsetLeft||0)+left+(width-left-right)/2)+'px');
     screen.style.setProperty('--game-top',((viewport?.offsetTop||0)+top+(height-top-bottom)/2)+'px');
   }
